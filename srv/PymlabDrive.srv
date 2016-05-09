@@ -1,0 +1,6 @@
+# pro ziskavani dat z I2C zarizeni
+string device
+string method
+string parameters
+---
+string value

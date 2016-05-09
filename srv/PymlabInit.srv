@@ -1,0 +1,6 @@
+# slouzi pro inicializaci sbernice I2C a pro prenos konfiguraci
+string i2c
+string bus
+string devices
+---
+bool status
