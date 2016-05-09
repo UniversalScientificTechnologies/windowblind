@@ -1,0 +1,14 @@
+<launch>
+    <node 
+        pkg="windowblind"
+        type="pymlab_ros.py"
+        name="listner"
+        output="screen"
+    />  
+    <node
+        pkg="windowblind"
+        type="pymlab_ros.py"
+        name="talker"
+        output="screen"
+    />  
+</launch>

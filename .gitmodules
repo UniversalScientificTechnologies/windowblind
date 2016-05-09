@@ -1,0 +1,3 @@
+[submodule "src/ros_tools"]
+	path = src/ros_tools
+	url = git@github.com:roman-dvorak/ros_tools.git
