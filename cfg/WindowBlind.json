@@ -1,0 +1,42 @@
+[
+	{
+		"type": "WindowBlind",
+		"name": "telescopeC",
+		"lat": 48.98706,
+		"lon": 14.4745,
+		"alt": 390,
+		"mode": 0,
+        "DB_host": "localhost",
+        "DB_user": "root",
+        "DB_pass": "root",
+        "DB_name": "AROM",
+	},
+    {
+        "type": "windowBlind",
+        "name": "window",
+        "driver": "WindowBlind01A",
+    },
+    {
+        "type": "weatherStation",
+        "name": "aws",
+        "driver": "AWS01B"
+    },
+    {
+        "type": "weatherStation",
+        "name": "wu",
+        "driver": "WEATHERUNDERGROUND",
+        "id": "IJIHOESK11",
+        "pass": "pass"
+    },
+    {
+        "type": "userInterface",
+        "name": "lcd",
+        "driver": "i2clcd",
+        "_mode": "change"
+    },
+    {
+        "type": "windowBlind",
+        "name": "guard",
+        "driver": "WindowGuard",
+    }
+]
