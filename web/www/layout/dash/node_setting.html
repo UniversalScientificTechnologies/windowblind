@@ -1,0 +1,185 @@
+<script type="text/javascript">
+
+	function getRadioVal(form, name) {
+		console.log(form, name);
+	    var val;
+	    var radios = form.elements[name];
+		console.log(radios);
+	    for (var i=0, len=radios.length; i<len; i++) {
+	        if ( radios[i].checked ) { // radio checked?
+	            val = radios[i].value; // if so, hold its value in val
+	            break;
+	        }
+	    }
+	    return val;
+	}
+
+	function node_setting_submit(blind) {
+
+  		var xhttp = new XMLHttpRequest();
+		var mode= getRadioVal(document.getElementById('form'+blind), 'mode');
+		var close_min_lum   = document.getElementById('close_min_lum'+blind).value;
+		var close_min_temp  = document.getElementById('close_min_temp'+blind).value;
+		var blind_down_time = document.getElementById('blind_down_time'+blind).value;
+		var blind_back_time = document.getElementById('blind_back_time'+blind).value;
+		var max_sun_alt_shade=document.getElementById('max_sun_alt_shade'+blind).value;
+		var blind_afternoon_time=document.getElementById('blind_afternoon_time'+blind).value;
+		var max_sun_alt_open=document.getElementById('max_sun_alt_open'+blind).value;
+		var blind_open_time = document.getElementById('blind_open_time'+blind).value;
+
+		var request = "id="+blind+
+			"&mode="+mode+
+			"&close_min_lum="+close_min_lum+
+			"&close_min_temp="+close_min_temp+
+			"&blind_down_time="+blind_down_time+
+			"&blind_back_time="+blind_back_time+
+			"&max_sun_alt_shade="+max_sun_alt_shade+
+			"&blind_afternoon_time="+blind_afternoon_time+
+			"&max_sun_alt_open="+max_sun_alt_open+
+			"&blind_open_time="+blind_open_time;
+
+		//alert(request);
+
+		//  mode
+		// close_min_lum
+		// close_min_temp
+		// blind_down_time
+		// blind_back_time
+		// max_sun_alt_shade
+		// blind_afternoon_time
+		// max_sun_alt_open
+		// blind_open_time
+
+		xhttp.open("POST", "/api/update/"+blind, true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send(request);
+		return false;
+	}
+</script>
+
+
+<h3>nastavení >> {{arg}}</h3>
+<hr>
+
+
+	<div class="col-sm-4 col-xs-12"><div class="panel panel-default" id="global_set_panel">
+			<div class="panel-heading">
+	    		<h3 class="panel-title">Globální nastavení</h3>
+	  		</div>
+	  		<div class="panel-body" id="global_set_panel_body">
+	  		<form id="form_global">
+				<fieldset class="form-group">
+					<label for="mode">Maximální vítr</label>
+					<div class="input-group">
+						<input type="number" class="form-control" id="max_wind" placeholder="Time" value="10" min="-20" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Limitr pro vítr, kdy se žaluzie vytáhnou">
+						<span class="input-group-addon">speed</span>
+					</div>
+					<div class="input-group">
+						<input type="number" class="form-control" id="max_wind_delay" placeholder="Time" value="10" min="-20" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho po ustání větru mají ještě být žaluzie vytažené">
+						<span class="input-group-addon">min</span>
+					</div>
+				</fieldset>
+			</form>
+	  		</div>
+	</div></div>
+
+{% for i, blind_id in enumerate(sorted(blinds)) %}
+{% set blind = blinds[blind_id]%}
+{% if blind['rw'] != 'd'%}
+
+	<div class="col-sm-4 col-xs-12"><div class="panel panel-default" id="{{blind_id}}">
+		<div class="panel-heading">
+    		<h3 class="panel-title">{{ eval(str(blind))['name']}}</h3>
+  		</div>
+  		<div class="panel-body" id="{{blind}}_body">
+
+
+				<!--<div class="btn-group" role="group" aria-label="...">
+					<button type="button" id="{{{{blind_id}}_btn_automatick}}" onclick="BlindDriverChoseMode({{i}}, 'auto')" class="btn btn-primay">Automatick</button>
+					<button type="button" id="{{{{blind_id}}_btn_manual}}" onclick="BlindDriverChoseMode({{i}}, 'man')" class="btn btn-primay">Manual</button>
+				</div>-->
+				<div>
+				<form id="form{{blind_id}}">
+					<fieldset class="form-group">
+						<label for="mode">Režim ovládání</label>
+						<div class="radio">
+						    <label>
+						      	<input type="radio" name="mode" value="auto" {% if blind['mode'] == "auto" %}checked{%end%}>
+						      	Automatický
+						    </label>
+						  	</div>
+						  	<div class="radio">
+						    <label>
+						      	<input type="radio" name="mode" value="manual" {% if blind['mode'] == "manual" %}checked{%end%}>
+						      	Ruční
+						    </label>
+						</div>
+					</fieldset>
+					<fieldset class="form-group">
+						<label for="Luminance">Zatažení žaluzií</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="close_min_lum{{blind_id}}" placeholder="Luminance" value="{{blind['close_min_lum']}}" min="0" max="100" step="1" data-toggle="tooltip" data-placement="bottom" title="Minimální osvětlení pro zatažení žaluzií">
+							<span class="input-group-addon">intenzita</span>
+						</div>
+						<div class="input-group">
+							<input type="number" class="form-control" id="close_min_temp{{blind_id}}" placeholder="Temperature" value="{{blind['close_min_temp']}}" min="0" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální vnitřní teplota pro zatažení žaluzií">
+							<span class="input-group-addon">C</span>
+						</div>
+						<div class="input-group">
+							<input type="number" class="form-control" id="blind_down_time{{blind_id}}" placeholder="Time" value="{{blind['blind_down_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas potřebný k sjetí žaluzií">
+							<span class="input-group-addon">ms</span>
+						</div>
+						<div class="input-group">
+							<input type="number" class="form-control" id="blind_back_time{{blind_id}}" placeholder="Time" value="{{blind['blind_back_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas pro narovnání žaluzií do vodorovné polohy">
+							<span class="input-group-addon">ms</span>
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<label for="Temperature">Vyrovnání žaluzií</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="max_sun_alt_shade{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_shade']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce, kdy se žaluzie otevřou ještě více">
+							<span class="input-group-addon">Deg</span>
+						</div>
+						<div class="input-group">
+							<input type="number" class="form-control" id="blind_afternoon_time{{blind_id}}" placeholder="Time" value="{{blind['blind_afternoon_time']}}"  min="100" max="60000" step="100" data-toggle="tooltip" data-placement="bottom" title="čas potřebný pro pootočení žaluzií">
+							<span class="input-group-addon">ms</span>
+						</div>
+						<small class="text-muted">Výška slunce (před západem), kdy se žaluzie narovnají.</small>
+					</fieldset>
+					<fieldset class="form-group">
+						<label for="Temperature">Vytažení žaluzií</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="max_sun_alt_open{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_open']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce, kdy se žaluzie kompletně vytáhnou">
+							<span class="input-group-addon">Deg</span>
+						</div>
+						<div class="input-group">
+							<input type="number" class="form-control" id="blind_open_time{{blind_id}}" placeholder="Time" value="{{blind['blind_open_time']}}"  min="100" max="60000" step="100" step="100" data-toggle="tooltip" data-placement="bottom" title="čas potřebný pro kompletní vytažení žaluzií">
+							<span class="input-group-addon">ms</span>
+						</div>
+						<small class="text-muted">Výška slunce (před západem), kdy se žaluzie vytáhnou.</small>
+					</fieldset>
+					
+  					<button class="btn btn-info" href="#" onclick="node_setting_submit('{{blind_id}}');">Uložit</button>
+				</form>
+				</div>
+				<div>
+				</div>
+  		</div>
+	</div></div>
+
+
+{% else %}
+	<div class="col-sm-4 col-xs-12"><div class="panel panel-default" id="{{blind}}">
+		<div class="panel-heading">
+    		<h3 class="panel-title">{{ eval(str(blind))['name']}}</h3>
+  		</div>
+  		<div class="panel-body" id="{{blind}}_body">
+  			Vypnuto
+  		</div>
+  	</div></div>
+{% end %}
+{% end %}
+
+
+<hr>

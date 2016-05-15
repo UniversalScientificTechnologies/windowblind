@@ -27,8 +27,8 @@ find_package(catkin REQUIRED COMPONENTS
     #MountGetCoordinates.srv
     #MountParameter.srv
     #RegisterDriver.srv
-    #DriverControl.srv
-    #NodeInfo.srv             # Pro ziskani informaci o nodech z AROM brain  -- servis 'arom/NodeInfo'
+    DriverControl.srv         # napr pro ziskani parametru z NODU (properties)
+    NodeInfo.srv              # Pro ziskani informaci o nodech z AROM brain  -- servis 'arom/NodeInfo'
     PymlabInit.srv            # Pro inicializaci PYMLABU
     PymlabServerStatus.srv    # Pro
     PymlabDrive.srv           # Pro

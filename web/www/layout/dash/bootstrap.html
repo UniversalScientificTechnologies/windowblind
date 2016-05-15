@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>titulek</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="AROM control center">
+    <meta name="author" content="Roman Dvorak">
+    <meta name="theme-color" content="#576269">
+    <link rel="icon" sizes="192x192" href="/img/Arom_logo_square_192.png">
+    <link rel="icon" href="/img/Arom_logo_square_192.png">
+
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" integrity="">
+    <link rel="stylesheet" href="/dash.css" integrity="">
+
+    <link rel="stylesheet" href="/lobi/lobibox.css"/>
+    <style type="text/css">
+        .container { margin-top: 10px; }
+
+        .progress-bar-vertical {
+          width: 20px;
+          min-height: 100px;
+          display: flex;
+          align-items: flex-end;
+          margin-right: 20px;
+          float: left;
+        }
+
+        .progress-bar-vertical .progress-bar {
+          width: 100%;
+          height: 0;
+          -webkit-transition: height 0.6s ease;
+          -o-transition: height 0.6s ease;
+          transition: height 0.6s ease;
+        }
+
+        .input-group { font-size: 14px !important; }
+    </style>
+    <script type="text/javascript">
+        function blindAction(blind_id, action) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "/api/blind/"+blind_id+"/"+action, true);
+            xhttp.send();
+        }
+
+    </script>
+</head>
+<body >
+
+<!-- horni panel
+================================================== -->
+
+
+<!-- Fixed navbar -->
+    <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#"> <img src="/img/Arom_logo_white_50.png"></a>
+            </div>
+            <!--<ul class="nav navbar-nav">
+                <li class="nav-item" class="active"><a href="#">Home</a></li>
+                <li class="nav-item"><a href="#">Page 1</a></li>
+                <li class="nav-item"><a href="#">Page 2</a></li> 
+                <li class="nav-item"><a href="#">Page 3</a></li> 
+            </ul>-->
+        </div>
+    </nav>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2 col-md-2 sidebar">
+            <div class="panel panel-default"><div class="panel-body">
+            Status box
+            </div></div>
+            <div class="panel panel-default"><div class="panel-body">
+                <h2>General</h2>
+                <ul class="nav nav-sidebar">
+                    <li class="nav-item"><a href="/">Domů</a></li>
+                    <li class="nav-item" data-toggle="modal" data-target="#modal"><a href="#">O arom</a></li>
+
+                </ul>
+                <h2>Devices</h2>
+                <ul id="device_sidebar" class="nav nav-sidebar">
+                    {% for device in eval(devices.data) %}
+                        <li class="nav-item">
+                            <a onclick="myFunction('{{eval(devices.data)[device]['name']}}')"> {{eval(devices.data)[device]['device']}} <font color="gray"><small>{{eval(devices.data)[device]['name']}}</small></font>
+                            </a>
+                        </li>
+                    {% end %}
+
+                </ul>
+            </div></div>
+            </div>
+
+
+
+            <div class="col-sm-10 col-md-10">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="acc_content"><div id="row">
+                                <div class=" col-sm-6 col-xs-12"> <div class="panel panel-default">
+                                    <div class="panel-heading">Počasí</div>
+                                    <div class="panel-body">
+                                        <span id="weather_data_table"></span>
+                                        <script type="text/javascript">
+                                            function sec_5() {
+                                                $("#weather_data_table").load("/api/weather/datatable"); 
+                                            }
+                                            sec_5()
+                                            var interval = setInterval(sec_5, 5000);
+                                        </script>
+                                    </div>
+                                </div> </div>
+
+                                {% for blind_id in sorted(blinds) %}
+                                {% set blind = blinds[blind_id]%}
+                                {% if blind['rw'] != 'd'%}
+
+                                <div class=" col-sm-3 col-xs-12"> <div class="panel panel-default">
+                                    <div class="panel-heading">{{blind['name']}} <b>[{{blind['status']}}]</b></div>
+                                    <div class="panel-body">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')" {% if blind['mode'] == 'auto'%}distabled{%end%}> Vytáhnout </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button></div>
+                                        <div class="progress progress-bar-vertical progress-bar-success progress-bar-striped" style="width: 100%">
+                                            {% if blind['status'] == 'open'%}
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 95px;">
+                                                </div>
+                                            {% elif blind['status'] == 'close' %}
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 7px;">
+                                                </div>
+                                            {% else %}
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 50px;">
+                                                </div>
+                                            {% end %}
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'close')" {% if blind['mode'] == 'auto'%}distabled{%end%}> Dolů </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_down')" disabled> Pootočit </button></div>
+
+                                    </div>
+                                </div></div>
+                                {% end %}
+                                {% end %}                                  
+
+                        </div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><b>AROM</b>: <b>a</b>utonomous <b>r</b>obotic <b>o</b>bservatory <b>m</b>anager</h4>
+                </div>
+                <div class="modal-body">
+                    <p>AROM je set malých programů postavených na systému ROS. AROM je software původně určený pro řízení astronomických dalekohledů a příslušenství observatoří. AROM díky své univerzálnosti lze použít i na jiných systémech.</p>
+                    <p>Tento systém je vytvořen s hardwarem stavebnice <a href="http://www.mlab.cz/">MLAB</a>. </p>
+                    <a href="http://www.mlab.cz/"><img src="/img/mlab_logo.png"></a>
+
+                    <br>
+                    <br>
+                    <hr>
+
+                    <h2>Používání Webového rozhraní AROM</h2>
+                    <p>
+                        Na levé straně je 
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js" integrity="sha384-mXQoED/lFIuocc//nss8aJOIrz7X7XruhR6bO+sGceiSyMELoVdZkN7F0oYwcFH+" crossorigin="anonymous"></script>
+    <script src="/lib/tether/js/tether.min.js"></script>
+    <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/lobi/lobipanel.min.js"></script>
+    <script src="/lobi/lobibox.js"></script>
+
+
+    <!-- ROSjs
+    ================================================== -->
+    <script type="text/javascript" src="/ros/core/Ros.js"></script>
+    <script type="text/javascript" src="/ros/RosLib.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.js"></script>
+
+
+    <!-- AJAX loading script
+    ================================================== -->
+    <script src="/mustache.min.js"></script>
+    <script src="/acc_loading.js"></script>
+
+
+
+</body>
+</html>
