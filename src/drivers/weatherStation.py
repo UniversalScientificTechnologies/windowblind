@@ -9,8 +9,8 @@ import actionlib
 import json
 from std_msgs.msg import String
 from std_msgs.msg import Float32
-from windowblind.srv import *
-from windowblind.msg import *
+from arom.srv import *
+from arom.msg import *
 import numpy as np
 import serial
 from astropy.time import Time
@@ -31,9 +31,6 @@ def calc_dewpoint(temp, hum):
     dewpoint = temp - dewpoint;
 
     return dewpoint
-
-
-
 
 
 class weatherStation(object):
@@ -100,8 +97,8 @@ class weatherStation(object):
                 rospy.logerr(e)
             rate.sleep()
 
-
         self.connection.close()
+
 
     def _sql(self, query, read=False):
         #print query
@@ -114,6 +111,7 @@ class weatherStation(object):
         except Exception, e:
             rospy.logerr("MySQL: %s" %repr(e))
         return result
+
 
     def reset(self, val=None):
         pass
@@ -174,11 +172,6 @@ class weatherDataUploader(object):
 
 
         ##
-        ##  Ovladac se pripoji k montazi
-        ##
-
-
-        ##
         ##  Ovladac pujde ukoncit
         ##
 
@@ -223,96 +216,6 @@ class weatherDataUploader(object):
             return value
 
 
-
-
-###############################################################################################################################################################################
-#################################################################################################################################################################################
-#################################################################################################################################################################################
-#################################################################################################################################################################################
-#################################################################################################################################################################################
-
-class AntiDewSystem(object):
-    def __init__(self, parent = None, arg = None, name = "AntiDewSystem", var = {}):
-        self.arg = arg
-        self.name = self.arg['name']
-        self.sname = self.name
-        self.variables = var
-        self.groups = []
-        
-        ##
-        ##  Pripojeni k databazi
-        ##
-
-        self.connection = mdb.connect(host="localhost", user="root", passwd="root", db="AROM", use_unicode=True, charset="utf8")
-        self.cursorobj = self.connection.cursor()
-
-        ##
-        ##  Inicializace vlastniho ovladace
-        ##
-
-        self.init()
-
-        s_RegisterDriver = rospy.Service('driver/weatherStation/%s' %self.name, arom.srv.DriverControl, self.reset)
-
-        ##
-        ##  Ceka to na spusteni AROMbrain nodu
-        ##
-
-        rospy.init_node('AROM_antiDewSystem', log_level=rospy.DEBUG)
-        rospy.loginfo("%s: wait_for_service: 'arom/RegisterDriver'" % self.name)
-        rospy.wait_for_service('arom/RegisterDriver')
-        rospy.loginfo("%s: >> brain found" % self.name)
-
-        ##
-        ##  Registrace zarizeni
-        ##  >Arom returns 1 - OK, 0 - False
-        ##
-
-        RegisterDriver = rospy.ServiceProxy('arom/RegisterDriver', arom.srv.RegisterDriver)
-        registred = RegisterDriver(name = self.name, sname = self.name, driver = self.arg['driver'], device = self.arg['type'], service = 'arom/driver/%s/%s' %(self.arg['type'], self.name), status = 1)
-        rospy.loginfo("%s: >> register %s driver: %s" %(self.name, 'AWS01A', registred))
-
-        ##
-        ##  Ovladac pujde ukoncit
-        ##
-        
-        self.groups = self._sql('SELECT dd_group_id, dd_sensor_name, dd_sensor_type, dd_heater_name, dd_heater_type, dd_mode_id, dd_mode_param FROM AROM.dewdeffender;')
-        print self.groups
-        device = {}
-        for group in self.groups:
-            device[str(group[0])] = self.dd_group(group, self.pymlab, self._sql)
-
-        rate = rospy.Rate(0.5)
-        while not rospy.is_shutdown():
-            try:
-                for group in self.groups:
-                    print group
-                    device[str(group[0])].renew()
-            except Exception, e:
-                rospy.logerr(e)
-            #time.sleep(30)
-            rate.sleep()
-
-        self.connection.close()
-
-
-    def _sql(self, query, read=False):
-        #print query
-        result = None
-        try:
-            self.cursorobj.execute(query)
-            result = self.cursorobj.fetchall()
-            if not read:
-                self.connection.commit()
-        except Exception, e:
-            rospy.logerr("MySQL: %s" %repr(e))
-        return result
-
-    def reset(self, val=None):
-        pass
-
-
-
 ############################################################################################################################################################################
 ############################################################################################################################################################################
 ############################################################################################################################################################################
@@ -342,30 +245,24 @@ class AWS01B(weatherStation):
         rospy.loginfo("%s: >> 'ROSpymlabServer' found" % self.name)
         self.last_wind_mes = Time.now()
 
+        self.pymlab(device="AWS_light", method="config", parameters=str(0x0000))
+
 
     def mesure(self):
+    # SHT31_out
+        TempHumOut = eval(self.pymlab(device="AWS_humi", method="get_TempHum", parameters=None).value)
 
-    # LTS -- ref temp
-        data = self.pymlab(device="AWS_temp_ref", method="get_temp").value
-        print data
-        AWS_LTS_temp_ref = eval(data)
-        #self.variables['AWS_LTS_temp_ref'] = AWS_LTS_temp_ref
+    # SHT31_in
+        TempHumIn = eval(self.pymlab(device="AWS_humi_in", method="get_TempHum", parameters=None).value)
 
-    # SHT31
-        TempHum = eval(self.pymlab(device="AWS_humi", method="get_TempHum", parameters=None).value)
-        #self.variables['AWS_AMBIENT_temp'] = TempHum[0]
-        #self.variables['AWS_AMBIENT_humi'] = TempHum[1]
+    # Light
+        Light = eval(self.pymlab(device="AWS_light", method="get_lux", parameters=None).value)/10
 
-    # SHT25
-        InTemp = eval(self.pymlab(device="AWS_humi_in", method="get_temp_8bit", parameters=None).value)
-        InHum = eval(self.pymlab(device="AWS_humi_in", method="get_hum_8bit", parameters=None).value)
-        #self.variables['AWS_AMBIENT_temp'] = TempHum[0]
-        #self.variables['AWS_AMBIENT_humi'] = TempHum[1]
 
     # WIND
 
         #rospy.set_param("weatherStation", str(self.variables))
-        rospy.loginfo('LTS: %s, sht31.temp: %s, sht31.humi: %s' %(str(AWS_LTS_temp_ref), str(TempHum[0]), str(TempHum[1])))
+        #rospy.loginfo('LTS: %s, sht31.temp: %s, sht31.humi: %s' %(str(AWS_LTS_temp_ref), str(TempHum[0]), str(TempHum[1])))
 
         angles = np.zeros(5)
         angles[4] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
@@ -397,31 +294,20 @@ class AWS01B(weatherStation):
             speed += (-angles[4] + 8*angles[3] - 8*angles[1] + angles[0])/12
             angles = np.roll(angles, 1)
 
-        eval(self.pymlab(device="AWS_wind_d", method="route", parameters='').value)
-        (x, y, z) = eval(self.pymlab(device="AWS_wind_d", method="axes", parameters='').value)
-
-        if y>0:
-            wind_az = 90.0 - math.atan2(x,y)*180.0/math.pi
-        if y<0:
-            wind_az = 270.0- math.atan2(x,y)*180.0/math.pi
-        if y==0 and x<0:
-            wind_az = 180.0
-        if y==0 and x>0:
-            wind_az = 180.0
-
-        print " X: " + str(x) + " Y: " + str(y) + " Z: " + str(z) + " DIR: " + str(wind_az)
-
         #speed = speed/AVERAGING             # apply averaging on acummulated value.
         
+        rospy.loginfo('OUT: %s-C%%, %s-lux, %s-mps, IN: %s-C-%%' %(str(TempHumOut), str(Light), str(speed), str(TempHumIn)))
+
         data_time = Time.now().unix
-        return [{'value':AWS_LTS_temp_ref, 'name':'AWS_telescope_temp_lts_ref', 'guantity': 'C', 'time': data_time},
-                {'value':TempHum[0], 'name':'AWS_ambient_temp_2m', 'guantity': 'C', 'time': data_time},
-                {'value':TempHum[1], 'name':'AWS_ambient_humi', 'guantity': 'perc', 'time': data_time},
-                {'value':InTemp, 'name':'AWS_in_temp', 'guantity': 'C', 'time': data_time},
-                {'value':InHum, 'name':'AWS_in_hum', 'guantity': 'perc', 'time': data_time},
-                {'value':speed*(1/5000), 'name':'AWS_ambient_wind_speed_5m', 'guantity': 'ms-1', 'time': data_time},
-                {'value':wind_az, 'name':'AWS_ambient_wind_direction_5m', 'guantity': 'ms-1', 'time': data_time},
-                {'value':calc_dewpoint(AWS_LTS_temp_ref, TempHum[1]), 'name':'AWS_ambient_dewpoint', 'guantity': 'C', 'time': data_time}]
+        return [#{'value':AWS_LTS_temp_ref, 'name':'AWS_telescope_temp_lts_ref', 'guantity': 'C', 'time': data_time},
+                {'value':TempHumOut[0], 'name':'AWS_temp', 'guantity': 'C', 'time': data_time},
+                {'value':TempHumOut[1], 'name':'AWS_humi', 'guantity': 'perc', 'time': data_time},
+                {'value':TempHumIn[0], 'name':'IN_temp', 'guantity': 'C', 'time': data_time},
+                {'value':TempHumIn[1], 'name':'IN_humi', 'guantity': 'perc', 'time': data_time},
+                {'value':speed, 'name':'AWS_wind', 'guantity': 'ms-1', 'time': data_time},
+                {'value':Light, 'name':'AWS_light', 'guantity': 'lux', 'time': data_time},
+                {'value':calc_dewpoint(TempHumOut[0], TempHumOut[1]), 'name':'AWS_dewpoint', 'guantity': 'C', 'time': data_time},
+                {'value':calc_dewpoint(TempHumIn[0], TempHumIn[1]), 'name':'IN_dewpoint', 'guantity': 'C', 'time': data_time}]
 
 
 
@@ -464,86 +350,7 @@ class WEATHERUNDERGROUND(weatherDataUploader):
         print "http://weatherstation.wunderground.com/weatherstation/updateweatherstation.php"+req
         resp, content = httplib2.Http().request("http://weatherstation.wunderground.com/weatherstation/updateweatherstation.php"+req)
 
-############################################################################################################################################################################
-############################################################################################################################################################################
-############################################################################################################################################################################
-############################################################################################################################################################################
-############################################################################################################################################################################
 
-######################################################################################
-######################################################################################
-##                                                                                  ##
-##                  Driver for --DewDeffender--                                     ##
-##                 ============================================                     ##
-##                                                                                  ##
-##                                                                                  ##
-######################################################################################
-        
-class DEWDEFF01A(AntiDewSystem):
-    def init(self):
-        rospy.loginfo("AWS01A weather station requires 'pymlab_drive' service from 'ROSpymlabServer' node")
-        rospy.loginfo("run>> 'rosrun arom initPymlab.py'")
-        rospy.wait_for_service('pymlab_drive')
-        self.pymlab = rospy.ServiceProxy('pymlab_drive', PymlabDrive)
-
-    def connect(self):
-        pass
-
-    class dd_group():
-        # trida starajici se o jednu skupinu zarizeni
-        def __init__(self, device, pymlab, _sql):
-            self.pymlab = pymlab
-            self.device = device
-            self._sql = _sql
-            print device
-            self.pid = eval(device[6])['pid']
-            print self.pid
-            self.pid_integral = 0
-            self.pid_last = 0
-            self.pid_out = 0
-            self.pymlab(device=self.device[3], method="set_ls0", parameters=str((0b11111111)))
-            self.pymlab(device=self.device[3], method="set_ls1", parameters=str((0b10101010)))
-            self.pymlab(device=self.device[3], method="set_pwm0", parameters=str((100, 100-0)))
-            self.pymlab(device=self.device[3], method="set_pwm1", parameters=str((100, 100-0)))
-
-        def pidCalc(self, actual, target):
-            error = target - actual
-
-            if abs(error) < 100:
-                self.pid_integral = self.pid_integral + error
-            else:
-                self.pid_integral = 0
-            P = error * self.pid[0]
-            I = self.pid_integral * self.pid[1]
-            D = (self.pid_last-actual) * self.pid[2]
-            self.pid_out = P + I + D
-            self.pid_out = self.pid_out * 1
-
-            if self.pid_out>100:
-                self.pid_out=100
-            elif self.pid_out<0:
-                self.pid_out=0
-
-            self.pid_last = actual #// save current value for next time
-            self.pymlab(device=self.device[3], method="set_pwm0", parameters=str((100, 100-self.pid_out)))
-            self.pymlab(device=self.device[3], method="set_pwm1", parameters=str((100, 100-self.pid_out)))
-
-
-        def renew(self):
-            if self.device[5] == 0:
-                #print self.device[1]
-                Temp = float(self._sql('SELECT value FROM weather where sensors_id = 8 ORDER BY id DESC LIMIT 1;')[0][0])
-                Hum = float(self._sql('SELECT value FROM weather where sensors_id = 3 ORDER BY id DESC LIMIT 1;')[0][0])
-                lTemp = eval(self.pymlab(device=self.device[1], method="get_temp_8bit", parameters=None).value)
-                #Hum = eval(self.pymlab(device=self.device[1], method="get_hum_8bit", parameters=None).value)
-                dew = calc_dewpoint(Temp, Hum)
-                self.pidCalc(lTemp, dew+5)
-
-                rospy.logdebug("out %.2f,temp hea %.2f,target %.2f,(dif: %.2f)pwm %.2f ", Temp, lTemp, dew+5, dew+5-lTemp, self.pid_out)
-
-        
-
-    
 
 if __name__ == '__main__':
     cfg = rospy.get_param("ObservatoryConfig/file")

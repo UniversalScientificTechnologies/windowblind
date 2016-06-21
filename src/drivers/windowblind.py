@@ -17,9 +17,16 @@ from arom.srv import *
 import astropy.units as u
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz, get_sun
 from astropy.time import Time
-import time
 import MySQLdb as mdb
 import httplib2
+
+import logging
+#logger = logging.getLogger('__name__')
+#hdlr = logging.FileHandler('/home/odroid/WindowBlind.log')
+#formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+#hdlr.setFormatter(formatter)
+#logger.addHandler(hdlr) 
+#logger.setLevel(logging.WARNING)
 
 
 ############################################################################################################################################################################
@@ -42,14 +49,14 @@ class window(object):
         if not rospy.has_param('/blind'):
             print "Vytvareni blind v ROSparam"
             self.properties = {}
-            self.properties['group01'] = {'msg_name':'group01', 'mode': 'auto'  , 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'r', 'name': "žaluzie okna A", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
-            self.properties['group02'] = {'msg_name':'group02', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'r', 'name': "žaluzie okna B", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
-            self.properties['group03'] = {'msg_name':'group03', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'r', 'name': "žaluzie okna C", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
-            self.properties['group04'] = {'msg_name':'group04', 'mode': 'auto'  , 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'r', 'name': "žaluzie okna D", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
-            self.properties['group05'] = {'msg_name':'group05', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'd', 'name': "žaluzie okna E", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
-            self.properties['group06'] = {'msg_name':'group06', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'd', 'name': "žaluzie okna F", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
-            self.properties['group07'] = {'msg_name':'group07', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'd', 'name': "žaluzie okna G", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
-            self.properties['group08'] = {'msg_name':'group08', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 60, "blind_down_time": 0, "blind_back_time": 0, "max_sun_alt_shade": 0, "blind_afternoon_time": 0, "max_sun_alt_open": 0, "blind_open_time": 0, 'rw': 'd', 'name': "žaluzie okna H", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
+            self.properties['group01'] = {'msg_name':'group01', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'r', 'name': "žaluzie okna A", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
+            self.properties['group02'] = {'msg_name':'group02', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'r', 'name': "žaluzie okna B", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
+            self.properties['group03'] = {'msg_name':'group03', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'r', 'name': "žaluzie okna C", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
+            self.properties['group04'] = {'msg_name':'group04', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'r', 'name': "žaluzie okna D", 'description': "", 'status': 'open'    , "rotation": 0, "change": True}
+            self.properties['group05'] = {'msg_name':'group05', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'd', 'name': "žaluzie okna E", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
+            self.properties['group06'] = {'msg_name':'group06', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'd', 'name': "žaluzie okna F", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
+            self.properties['group07'] = {'msg_name':'group07', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'd', 'name': "žaluzie okna G", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
+            self.properties['group08'] = {'msg_name':'group08', 'mode': 'manual', 'close_min_lum': 50, 'close_min_temp': 20, 'blind_down_time': 5000, "blind_back_time": 100, "max_sun_alt_shade": 45, "blind_afternoon_time": 100, "max_sun_alt_open": 10, "blind_open_time": 6000, 'rw': 'd', 'name': "žaluzie okna H", 'description': "", 'status': 'disabled', "rotation": 0, "change": True}
 
             rospy.set_param('/blind', self.properties)
         else:
@@ -146,6 +153,7 @@ class window(object):
             return repr(self.properties)
         elif type == 'update':
             raise "Not supported yet"
+            
 
 
 ######################################################################################
@@ -159,115 +167,146 @@ class window(object):
         
 class WindowGuard(window):
     def init(self):
+
         rospy.loginfo("WindowGuard requires 'pymlab_drive' service from 'ROSpymlabServer' node")
         rospy.loginfo("run>> 'rosrun arom initPymlab.py'")
         rospy.wait_for_service('pymlab_drive')
         self.pymlab = rospy.ServiceProxy('pymlab_drive', PymlabDrive)
         self.state = 0b0000000000000000
-        self.pymlab(device="gpio", method="config_ports", parameters=str((0x0000, 0x0000)))
-        self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+        self.pymlab(device="blind", method="config_ports", parameters=str((0x00, 0x00)))
+        self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
         self.allup(True)
 
 
     def run(self):
-        #if self.state != self.oldstate:
-        #    self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
-        #    self.oldstate = self.state
-
-        #for off in self.off:
-        #    if time.time() > off[0]:
-        #        self.state = 0
-        #        self.off.remove(off)
-
-        if rospy.get_param('/weather/wind_alert'):
-            allup()
+        print "#############################"
+        if not self.isWindOk():
+            self.allup()
         else:
             for i, blind_id in enumerate(sorted(rospy.get_param('/blind'))):
+                print "======", blind_id, "==========",
                 blind = rospy.get_param('/blind')[blind_id]
-                if blind['rw'] != 'd':
-                    print blind
-                    if blind['status'] != blind['status_driver']:
-                        print "###################"
-                        print "     ZMENA DAT"
-                        print "^^^^^^^^^^^^^^^^^^^^"
-                        if blind['status'] == 'close':
-                            self.down(int(blind_id[-1:])-1, blind_id, int(blind['blind_down_time']), int(blind['blind_back_time']))
-                        if blind['status'] == 'open':
-                            self.up(int(blind_id[-1:])-1, blind_id, int(blind['blind_open_time']), 0)
-
-                    else:
-                        print "neni zmena"
-
-
+                if 'group' in blind_id:
+                    if blind['rw'] != 'd':
+                        print "target >>>>>", blind['status'], blind['status_driver']
+                        if blind['status'] != blind['status_driver']:
+                            logging.info("Zmena dat:")
+                            print "###################"
+                            print "     ZMENA DAT"
+                            print "^^^^^^^^^^^^^^^^^^^^"
+                            if blind['status'] == 'close':
+                                self.down(int(blind_id[-1:])-1, blind_id, int(blind['blind_down_time']), int(blind['blind_back_time']))
+                                rospy.set_param('/blind/'+blind_id+"/status_driver", 'close')
+                            elif blind['status'] == 'open':
+                                self.up(int(blind_id[-1:])-1, blind_id, int(blind['blind_open_time']), 0)
+                                rospy.set_param('/blind/'+blind_id+"/status_driver", 'open')
+                        
+                        elif blind['rotation'] != blind['rotation_driver']:
+                            logging.info("Zmena rotace:")
+                            print "###################"
+                            print "     ZMENA ROTACE"
+                            print "^^^^^^^^^^^^^^^^^^^^"
+                            if blind['rotation'] > blind['rotation_driver']:
+                                self.down(int(blind_id[-1:])-1, blind_id, int(blind['blind_afternoon_time']), 0)
+                                rospy.set_param('/blind/'+blind_id+"/rotation_driver", blind['rotation'])
+                                rospy.set_param('/blind/'+blind_id+"/rotation", blind['rotation'])
+                            elif blind['rotation'] < blind['rotation_driver']:
+                                self.up(int(blind_id[-1:])-1, blind_id, int(blind['blind_afternoon_time']), 0)
+                                rospy.set_param('/blind/'+blind_id+"/rotation_driver", blind['rotation'])
+                                rospy.set_param('/blind/'+blind_id+"/rotation", blind['rotation'])
+                        
+                        else:
+                            print "neni zmena"
+                else:
+                    print ""
 
 
     def allup(self, force = False):
         for i, blind_id in enumerate(sorted(rospy.get_param('/blind'))):
             blind = rospy.get_param('/blind')[blind_id]
-            if force == True or blind['status'] == 'close':
+            if (force == True or blind['status'] == 'close') and 'group' in blind_id:
                 print blind_id, blind['rw']
                 if blind['rw'] != 'd':
-                    print "oteviram", i, blind['blind_open_time']
-                    self.up(i, blind_id, delay = int(blind['blind_open_time']), force=force)
+                    print "====oteviram==vse====", i, blind['blind_open_time']
+                    self.up(int(blind_id[-1:])-1, blind_id, delay = int(blind['blind_open_time']), force=force)
                 rospy.set_param('/blind/'+blind_id+'/change', False)
+
 
     def alldown(self, force = False):
         for i, blind_id in enumerate(sorted(rospy.get_param('/blind'))):
             blind = rospy.get_param('/blind')[blind_id]
-            if force == True or blind['status'] == 'open':
+            if (force == True or blind['status'] == 'open') and 'group' in blind_id:
                 print blind_id, blind['rw']
                 if blind['rw'] != 'd':
-                    print "zaviram", i, blind['blind_open_time']
-                    self.down(i, blind_id, delay = int(blind['blind_down_time']), back_delay=int(blind['blind_back_time']), force=force)
+                    print "====zaviram==vse=====", i, blind['blind_open_time']
+                    self.down(int(blind_id[-1:])-1, blind_id, delay = int(blind['blind_down_time']), back_delay=int(blind['blind_back_time']), force=force)
                 rospy.set_param('/blind/'+blind_id+'/change', False)
 
 
     def up(self, group_num, group, delay = 5, back_delay = 0, force = False):
-        rospy.loginfo("Window blind #%i UP for %fs" %(group_num, delay/1000.0))
+        rospy.loginfo("Window blind #%i **UP** for %fs" %(group_num, delay/1000.0))
         self.state = 0b0 ^ (0b1 << group_num*2)
-        self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+        self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
         time.sleep(delay/1000.0)
         self.state = 0
-        self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
-        rospy.set_param('/blind/'+group+"/status", 'open')
-        rospy.set_param('/blind/'+group+"/status_driver", 'open')
+        self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
+        #rospy.set_param('/blind/'+group+"/status", 'open')
+        #rospy.set_param('/blind/'+group+"/status_driver", 'open')
+        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        print "get_param", rospy.get_param('/blind/'+group+"/status"), rospy.get_param('/blind/'+group+"/status_driver")
         rospy.set_param('/blind/'+group+"/rotation", 0)
         rospy.set_param('/blind/'+group+"/rotation_driver", 0)
         if back_delay != 0:
+            time.sleep(1000)
             self.state = 0b0 ^ (0b1 << group_num*2+1)
-            self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+            self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
             time.sleep(back_delay/1000.0)
             self.state = 0
-            self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+            self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
             rospy.set_param('/blind/'+group+"/rotation", back_delay*-1)
             rospy.set_param('/blind/'+group+"/rotation_driver", back_delay*-1)
         return True
 
 
     def down(self, group_num, group, delay = 5, back_delay = 0, force = False):
-        rospy.loginfo("Window blind #%i UP for %fs" %(group_num, delay/1000.0))
+        rospy.loginfo("Window blind #%i **DOWN** for %fs" %(group_num, delay/1000.0))
         self.state = 0b0 ^ (0b1 << group_num*2+1)
-        self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+        self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
         time.sleep(delay/1000.0)
         self.state = 0
-        self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
-        rospy.set_param('/blind/'+group+"/status", 'close')
-        rospy.set_param('/blind/'+group+"/status_driver", 'close')
+        self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
+        #rospy.set_param('/blind/'+group+"/status", 'close')
+        #rospy.set_param('/blind/'+group+"/status_driver", 'close')
+        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        print "get_param", rospy.get_param('/blind/'+group+"/status"), rospy.get_param('/blind/'+group+"/status_driver")
         rospy.set_param('/blind/'+group+"/rotation", 0)
         rospy.set_param('/blind/'+group+"/rotation_driver", 0)
         if back_delay != 0:
-            rospy.loginfo("Window blind #%i ROTATE for %fs" %(group_num, back_delay/1000.0))
+            time.sleep(1)
+            rospy.loginfo("Window blind #%i **ROTATE** for %fs" %(group_num, back_delay/1000.0))
+            logging.info("Window blind #%i **ROTATE** for %fs", group_num, delay/1000.0)
             self.state = 0b0 ^ (0b1 << group_num*2)
-            self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+            self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
             time.sleep(back_delay/1000.0)
             self.state = 0
-            self.pymlab(device="gpio", method="set_ports", parameters=str(bin(self.state)))
+            self.pymlab(device="blind", method="set_ports", parameters=str((~self.state, 0x00000000)))
             rospy.set_param('/blind/'+group+"/rotation", back_delay)
             rospy.set_param('/blind/'+group+"/rotation_driver", back_delay)
         return True
  
     def connect(self):
         pass
+
+    def isWindOk(self):
+        wind_limit = rospy.get_param('/blind/global/max_wind', 50)
+        wind_limit_delay = rospy.get_param('/blind/global/max_wind_delay', 60*48)*60
+        mtime = time.time()
+        damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-3600*24) )[0][0])
+        actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime- 300) )[0][0])
+        if actual < wind_limit and damage > 1:
+            return True
+        else:
+            return False
 
 
 
@@ -304,38 +343,61 @@ class controller(object):
         altazframe = AltAz(obstime=astroTime, location = EarthLocation(lat=49*u.deg, lon=15*u.deg, height=300*u.m))
         self.sunLoc = get_sun(astroTime).transform_to(altazframe).altaz
 
+        print ""
         print "#############################"
         groups = rospy.get_param('/blind/')
         self.groups = groups
+        self.group  = groups
+        self.inTemp = float(self._sql('SELECT value FROM weather WHERE sensors_id = 17 order by id desc LIMIT 1;')[0][0])
+        self.outLum = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 16 and date > %i;' %(int(time.time() - int(rospy.get_param('/blind/global/min_light_delay', 30)*60))) )[0][0])
+        
         for i, group_id in enumerate(sorted(groups)):
-            group = groups[group_id]
-            if group['rw'] == 'd':
-                break
+            print "=====", i, "====", group_id, "===="
+            if 'group' in group_id:
+                group = groups[group_id]
+                if group['rw'] == 'd':
+                    break
 
-            rospy.loginfo(">> %s" % repr(group_id))
-            if not self.isWindOk():
-                self.openBlind(group_id)
-                rospy.loginfo("blind '%s' is in wind alarm" %group_id)
-                break
+                rospy.loginfo(">> %s" % repr(group_id))
+                if not self.isWindOk():
+                    self.openBlind(group_id)
+                    rospy.logerr("blind '%s' is in wind alarm" %group_id)
+                    print "chyba vetru"
 
-            if self.isModeAuto(group_id):
-                rospy.loginfo("blind '%s' is in auto" %group_id)
-                if self.isMorgen():
-                    self.areMorgenCondOk(group_id)
-                    self.closeBlind(group_id)
                 else:
-                    self.areAfternoonCondOk(group_id)
-                    self.closeBlind(group_id)
+                    if self.isModeAuto(group_id):
+                        print "vitr OK - automaticky mod - ",
+                        rospy.loginfo("blind '%s' is in auto" %group_id)
+                        if self.isMorgen(group_id):
+                            print "je dopoledne - ",
+                            self.areMorgenCondOk(group_id)
+                        else:
+                            print "je odpoledne - ",
+                            self.areAfternoonCondOk(group_id)
+                            #self.closeBlind(group_id)
 
-            elif self.isModeManual(group_id):
-                rospy.loginfo("blind '%s' is in manual" %group_id)
-                print group['status'] != group['status_driver'], group['status'], group['status_driver']
-                if group['status'] != group['status_driver']:
-                    self.moveBlind(group_id, group['status'])
+                    elif self.isModeManual(group_id):
+                        print "vitr OK - manualni mod - "
+                        '''
+                        print "pohyb", group['status'] != group['status_driver'], group['status'], group['status_driver']
+                        #if group['status'] == 'open':
+                        #    print "STATUS **********************",
+                        #else:
+                        #    print "STATUS ######################",
+                        #if group['status_driver'] == 'open':
+                        #    print "  DRIVER  **********************"
+                        #else:
+                        #    print " DRIVER ######################"
+                        #if group['status'] != group['status_driver']:
+                        #    self.moveBlind(group_id, group['status'])
+                        '''
 
-            else:
-                rospy.loginfo("blind '%s' is in dimised/manual" %group_id)
-                pass
+
+                    else:
+                        print "vitr OK - chyba modu - ",
+                        rospy.loginfo("blind '%s' is in dimised/manual" %group_id)
+                        pass
+                        print ""
 
     def _sql(self, query, read=False):
         result = None
@@ -349,7 +411,18 @@ class controller(object):
         return result
 
     def isWindOk(self):
-        return True
+        wind_limit = int(rospy.get_param('/blind/global/max_wind', 50))
+        wind_limit_delay = int(rospy.get_param('/blind/global/max_wind_delay', 60*48)*60)
+        mtime = time.time()
+        damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-3600*24) )[0][0])
+        actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
+        print "actual wind", actual, "damage", damage
+        if actual < wind_limit and damage > 1:
+            rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f." %(float(self.sunLoc.alt.degree)))
+            return True
+        else:
+            rospy.set_param('/blind/global/message', "wind alarm!!!")
+            return False
 
     def getMode(self, group):
         return rospy.get_param('/blind/'+group+'/mode', None)
@@ -362,58 +435,90 @@ class controller(object):
 
     def isModeManual(self, group):
         if self.getMode(group) == 'manual':
+            #self.closeBlind(group)
             return True
         else:
             return False
 
-    def isMorgen(self):
+    def isMorgen(self, group):
         now = datetime.datetime.now()
-        if now.hour < 12:
+        sunHeight = float(self.sunLoc.alt.degree)
+        if now.hour < 12 or sunHeight > float(self.groups[group]['max_sun_alt_shade']):
             return True
         else:
             return False
 
     def areMorgenCondOk(self, group):
-        inTemp = self._sql('SELECT * FROM weather WHERE sensors_id = 9 order by id desc LIMIT 1;')
+        # podminky rano:
+        # >> min cas
+        # >> min jas po urcitou dobu
 
-        print "sun", self.sunLoc.alt*u.deg
+        #inTemp = float(self._sql('SELECT value FROM weather WHERE sensors_id = 17 order by id desc LIMIT 1;')[0][0])
+        #outLum = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 16 and date > %i;' %(int(time.time() - int(rospy.get_param('/blind/global/min_light_delay', 30)*60))) )[0][0])
+        print "rano - lum: %s, in temp %s" %(repr(self.outLum), repr(self.inTemp))
 
-        #if self.sunLoc.alt*u.deg > print group
 
-        return True
+        #if inTemp self.group[group]['close_min_temp'] > and outLum > self.group[group]['close_min_lum']:
+        now = datetime.datetime.now()
+        if (now.hour*60+now.minute) > 7*60  and self.outLum > float(self.group['global']['min_light']) and self.inTemp > float(self.group['global']['min_temp']):
+            rospy.loginfo("ZAVRIT")
+            self.closeBlind(group)
+            rospy.loginfo("ZAVRIT")
+            return True
+        else:
+            return False
 
     def areAfternoonCondOk(self, group):
-        inTemp = self._sql('SELECT * FROM weather WHERE sensors_id = 9 order by id desc LIMIT 1;')
-        inTemp = self._sql('SELECT * FROM weather WHERE sensors_id = 9 order by id desc LIMIT 1;')
-        sunHeight = self.sunLoc.alt*u.deg
+        # podminky odpeledne:
+        # >> max vyska 1
+        # >> max vyska 2
 
-        print "sun", self.sunLoc.alt*u.deg
-        print group, " >> ", self.groups[group]
-
-        if self.sunLoc.alt*u.deg < self.groups[group]['max_sun_alt_open']:
-            rospy.set_param('/blind/'+group+'/status', 'open')
-        elif self.sunLoc.alt*u.deg < self.groups[group]['max_sun_alt_shade']:
-            rospy.set_param('/blind/'+group+'/rotation', self.groups[group]['blind_afternoon_time'])
+        sunHeight = float(self.sunLoc.alt.degree)
+        print "vyska slunce: ", sunHeight, "open, shade:", self.groups[group]['max_sun_alt_open'], self.groups[group]['max_sun_alt_shade'],
+        
+        if sunHeight < float(self.groups[group]['max_sun_alt_open']):  #vyska slunce pro uplne otevreni
+            print "-- Otevrit kompletne"
+            self.openBlind(group)
+            rospy.loginfo("OTEVRIT")
+        elif sunHeight < float(self.groups[group]['max_sun_alt_shade']) and self.outLum > float(self.group['global']['min_light']):  #vyska slunce pro pootoceni
+            print "-- privrit"
+            rospy.loginfo("OTOCIT")
+            self.rotateBlind(group)
+        else:
+            print "-- zavreno"
         return True
 
+    '''
     def moveBlind(self, group, target):
-        print "moveBlind", group, target
+        print "moveBlind---------", group, target
         if target == 'close':
             self.closeBlind(group)
         if target == 'open':
             self.openBlind(group)
+    '''
 
     def closeBlind(self, group):
         rospy.loginfo('CLOSE %s' %(group))
+        rospy.set_param('/blind/'+group+'/status', 'close')
         pass
 
     def openBlind(self, group):
         rospy.loginfo('OPEN  %s' %(group))
+        rospy.set_param('/blind/'+group+'/status', 'open')
+        pass
+
+    def rotateBlind(self, group):
+        rospy.loginfo('ROTATE  %s' %(group))
+        rospy.set_param('/blind/'+group+'/rotation', self.groups[group]['blind_afternoon_time'])
         pass
 
 
 
+
 if __name__ == '__main__':
+
+    logging.basicConfig(filename='windowBlind.log', level=logging.INFO,format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
     cfg = rospy.get_param("ObservatoryConfig/file")
     #print cfg
     with open(cfg) as data_file:

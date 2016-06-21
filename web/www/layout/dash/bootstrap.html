@@ -73,7 +73,8 @@
         <div class="row">
             <div class="col-sm-2 col-md-2 sidebar">
             <div class="panel panel-default"><div class="panel-body">
-            Status box
+             {{blinds['global']['message']}}
+            
             </div></div>
             <div class="panel panel-default"><div class="panel-body">
                 <h2>General</h2>
@@ -105,11 +106,12 @@
                                     <div class="panel-heading">Počasí</div>
                                     <div class="panel-body">
                                         <span id="weather_data_table"></span>
+
+
                                         <script type="text/javascript">
                                             function sec_5() {
                                                 $("#weather_data_table").load("/api/weather/datatable"); 
                                             }
-                                            sec_5()
                                             var interval = setInterval(sec_5, 5000);
                                         </script>
                                     </div>
@@ -117,19 +119,20 @@
 
                                 {% for blind_id in sorted(blinds) %}
                                 {% set blind = blinds[blind_id]%}
+                                {% if 'group' in blind_id%}
                                 {% if blind['rw'] != 'd'%}
 
                                 <div class=" col-sm-3 col-xs-12"> <div class="panel panel-default">
-                                    <div class="panel-heading">{{blind['name']}} <b>[{{blind['status']}}]</b></div>
+                                    <div class="panel-heading">{{blind['name']}} <b>[{{blind['status_driver']}}]</b> <small>{{blind['rotation_driver']}}</small></div>
                                     <div class="panel-body">
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')" {% if blind['mode'] == 'auto'%}distabled{%end%}> Vytáhnout </button>
                                             <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button></div>
                                         <div class="progress progress-bar-vertical progress-bar-success progress-bar-striped" style="width: 100%">
-                                            {% if blind['status'] == 'open'%}
+                                            {% if blind['status_driver'] == 'open'%}
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 95px;">
                                                 </div>
-                                            {% elif blind['status'] == 'close' %}
+                                            {% elif blind['status_driver'] == 'close' %}
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 7px;">
                                                 </div>
                                             {% else %}
@@ -143,6 +146,7 @@
 
                                     </div>
                                 </div></div>
+                                {% end %}
                                 {% end %}
                                 {% end %}                                  
 
@@ -164,7 +168,7 @@
                     <h4 class="modal-title"><b>AROM</b>: <b>a</b>utonomous <b>r</b>obotic <b>o</b>bservatory <b>m</b>anager</h4>
                 </div>
                 <div class="modal-body">
-                    <p>AROM je set malých programů postavených na systému ROS. AROM je software původně určený pro řízení astronomických dalekohledů a příslušenství observatoří. AROM díky své univerzálnosti lze použít i na jiných systémech.</p>
+                    <p>AROM je set malých programů postavených na systému ROS. AROM je software původně určený pro řízení astronomických dalekohledů a příslušenství observatoří. Díky své univerzálnosti lze AROM použít i na jiných systémech.</p>
                     <p>Tento systém je vytvořen s hardwarem stavebnice <a href="http://www.mlab.cz/">MLAB</a>. </p>
                     <a href="http://www.mlab.cz/"><img src="/img/mlab_logo.png"></a>
 
@@ -190,8 +194,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js" integrity="sha384-mXQoED/lFIuocc//nss8aJOIrz7X7XruhR6bO+sGceiSyMELoVdZkN7F0oYwcFH+" crossorigin="anonymous"></script>
     <script src="/lib/tether/js/tether.min.js"></script>
     <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/lobi/lobipanel.min.js"></script>
-    <script src="/lobi/lobibox.js"></script>
 
 
     <!-- ROSjs

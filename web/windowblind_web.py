@@ -1,9 +1,9 @@
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import time
 import datetime
+import os
 import tornado.ioloop
 import tornado.web
 from tornado import web
@@ -138,9 +138,6 @@ class processing(web.RequestHandler):
 
 
 
-
-
-
 class BlindApi(web.RequestHandler):
     @tornado.web.asynchronous
     def get(self, address=None):
@@ -195,38 +192,57 @@ class BlindApi(web.RequestHandler):
             print "UPDATE POST"
             print address
 
-            '''
-            // mode
-            // close_min_lum
-            // close_min_temp
-            // blind_down_time
-            // blind_back_time
-            // max_sun_alt_shade
-            // blind_afternoon_time
-            // max_sun_alt_open
-            // blind_open_time
-            '''
-
             id = self.get_argument('id')
-            mode = self.get_argument('mode')
-            close_min_lum = self.get_argument('close_min_lum')
-            close_min_temp = self.get_argument('close_min_temp')
-            blind_down_time = self.get_argument('blind_down_time')
-            blind_back_time = self.get_argument('blind_back_time')
-            max_sun_alt_shade = self.get_argument('max_sun_alt_shade')
-            blind_afternoon_time = self.get_argument('blind_afternoon_time')
-            max_sun_alt_open = self.get_argument('max_sun_alt_open')
-            blind_open_time = self.get_argument('blind_open_time')
 
-            rospy.set_param('/blind/'+id+"/mode", mode)
-            rospy.set_param('/blind/'+id+"/close_min_lum", close_min_lum)
-            rospy.set_param('/blind/'+id+"/close_min_temp", close_min_temp)
-            rospy.set_param('/blind/'+id+"/blind_down_time", blind_down_time)
-            rospy.set_param('/blind/'+id+"/blind_back_time", blind_back_time)
-            rospy.set_param('/blind/'+id+"/max_sun_alt_shade", max_sun_alt_shade)
-            rospy.set_param('/blind/'+id+"/blind_afternoon_time", blind_afternoon_time)
-            rospy.set_param('/blind/'+id+"/max_sun_alt_open", max_sun_alt_open)
-            rospy.set_param('/blind/'+id+"/blind_open_time", blind_open_time)
+            if id == 'global':
+                min_light = self.get_argument('min_light')
+                min_light_delay = self.get_argument('min_light_delay')
+                min_temp = self.get_argument('min_temp')
+                max_wind = self.get_argument('max_wind')
+                max_wind_delay = self.get_argument('max_wind_delay')
+
+                rospy.set_param('/blind/global/min_light', min_light)
+                rospy.set_param('/blind/global/min_light_delay', min_light_delay)
+                rospy.set_param('/blind/global/min_temp', min_temp)
+                rospy.set_param('/blind/global/max_wind', max_wind)
+                rospy.set_param('/blind/global/max_wind_delay', max_wind_delay)
+
+            elif 'group' in id:
+                '''
+                // mode
+                #// close_min_lum
+                #// close_min_temp
+                // blind_down_time
+                // blind_back_time
+                // max_sun_alt_shade
+                // blind_afternoon_time
+                // max_sun_alt_open
+                // blind_open_time
+                '''
+                mode = self.get_argument('mode')
+                #close_min_lum = self.get_argument('close_min_lum')
+                #close_min_temp = self.get_argument('close_min_temp')
+                blind_down_time = self.get_argument('blind_down_time')
+                blind_back_time = self.get_argument('blind_back_time')
+                max_sun_alt_shade = self.get_argument('max_sun_alt_shade')
+                blind_afternoon_time = self.get_argument('blind_afternoon_time')
+                max_sun_alt_open = self.get_argument('max_sun_alt_open')
+                blind_open_time = self.get_argument('blind_open_time')
+
+                rospy.set_param('/blind/'+id+"/mode", mode)
+                #rospy.set_param('/blind/'+id+"/close_min_lum", close_min_lum)
+                #rospy.set_param('/blind/'+id+"/close_min_temp", close_min_temp)
+                rospy.set_param('/blind/'+id+"/blind_down_time", blind_down_time)
+                rospy.set_param('/blind/'+id+"/blind_back_time", blind_back_time)
+                rospy.set_param('/blind/'+id+"/max_sun_alt_shade", max_sun_alt_shade)
+                rospy.set_param('/blind/'+id+"/blind_afternoon_time", blind_afternoon_time)
+                rospy.set_param('/blind/'+id+"/max_sun_alt_open", max_sun_alt_open)
+                rospy.set_param('/blind/'+id+"/blind_open_time", blind_open_time)
+
+            try:
+                os.system("rosparam dump /home/odroid/robozor/parameters.yaml")
+            except Exception, e:
+                raise e
 
         elif address[0] == 'blind':
             blind_id = address[1]
@@ -295,16 +311,29 @@ class node(web.RequestHandler):
 
         print properties
         print "---------------"
-
+        print rospy.get_param('/blind')
+        print "---------------"
 
         self.render("www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
 
+class Meteo(web.RequestHandler):
+    def get(self, arg = None):
+        if arg == None:
+            print arg
+            self.finish('meteo meteo stránka :) :' + repr(arg))
+        else:
+            self.finish('stranka pro parametry :' + repr(arg))
+
+
+        
 
 app = web.Application([
         (r'/', bootstrap),
         (r'/node', node),
         (r'/node/(.*)', node),
         (r'/api/(.*)', BlindApi),
+        (r'/meteo', Meteo),
+        (r'/meteo/(.*)', Meteo),
         #(r'/', bootstrap),
         #(r'/setting', bootstrap_setting),
         #(r'/api/(.*)', DriverPage),

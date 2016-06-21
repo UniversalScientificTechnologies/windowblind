@@ -15,45 +15,80 @@
 	}
 
 	function node_setting_submit(blind) {
+		console.log(blind)
 
-  		var xhttp = new XMLHttpRequest();
-		var mode= getRadioVal(document.getElementById('form'+blind), 'mode');
-		var close_min_lum   = document.getElementById('close_min_lum'+blind).value;
-		var close_min_temp  = document.getElementById('close_min_temp'+blind).value;
-		var blind_down_time = document.getElementById('blind_down_time'+blind).value;
-		var blind_back_time = document.getElementById('blind_back_time'+blind).value;
-		var max_sun_alt_shade=document.getElementById('max_sun_alt_shade'+blind).value;
-		var blind_afternoon_time=document.getElementById('blind_afternoon_time'+blind).value;
-		var max_sun_alt_open=document.getElementById('max_sun_alt_open'+blind).value;
-		var blind_open_time = document.getElementById('blind_open_time'+blind).value;
+		if (blind == 'global') {
+			var xhttp = new XMLHttpRequest();
+			var min_light        = document.getElementById('min_light').value;
+			var min_light_delay  = document.getElementById('min_light_delay').value;
+			var max_wind         = document.getElementById('max_wind').value;
+			var min_temp         = document.getElementById('min_temp').value;
+			var max_wind_delay   = document.getElementById('max_wind_delay').value;
 
-		var request = "id="+blind+
-			"&mode="+mode+
-			"&close_min_lum="+close_min_lum+
-			"&close_min_temp="+close_min_temp+
-			"&blind_down_time="+blind_down_time+
-			"&blind_back_time="+blind_back_time+
-			"&max_sun_alt_shade="+max_sun_alt_shade+
-			"&blind_afternoon_time="+blind_afternoon_time+
-			"&max_sun_alt_open="+max_sun_alt_open+
-			"&blind_open_time="+blind_open_time;
+			var request = "id="+'global'+
+				"&min_light="+min_light+
+				"&min_light_delay="+min_light_delay+
+				"&max_wind="+max_wind+
+				"&min_temp="+min_temp+
+				"&max_wind_delay="+max_wind_delay;
 
-		//alert(request);
+			//  mode
+			// close_min_lum
+			// close_min_temp
+			// blind_down_time
+			// blind_back_time
+			// max_sun_alt_shade
+			// blind_afternoon_time
+			// max_sun_alt_open
+			// blind_open_time
 
-		//  mode
-		// close_min_lum
-		// close_min_temp
-		// blind_down_time
-		// blind_back_time
-		// max_sun_alt_shade
-		// blind_afternoon_time
-		// max_sun_alt_open
-		// blind_open_time
+			xhttp.open("POST", "/api/update/"+blind, true);
+			xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhttp.send(request);
+			return false;
 
-		xhttp.open("POST", "/api/update/"+blind, true);
-		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhttp.send(request);
-		return false;
+		} 
+		else {
+
+			var xhttp = new XMLHttpRequest();
+			var mode= getRadioVal(document.getElementById('form'+blind), 'mode');
+			//var close_min_lum   = document.getElementById('close_min_lum'+blind).value;
+			//var close_min_temp  = document.getElementById('close_min_temp'+blind).value;
+			var blind_down_time = document.getElementById('blind_down_time'+blind).value;
+			var blind_back_time = document.getElementById('blind_back_time'+blind).value;
+			var max_sun_alt_shade=document.getElementById('max_sun_alt_shade'+blind).value;
+			var blind_afternoon_time=document.getElementById('blind_afternoon_time'+blind).value;
+			var max_sun_alt_open=document.getElementById('max_sun_alt_open'+blind).value;
+			var blind_open_time = document.getElementById('blind_open_time'+blind).value;
+
+			var request = "id="+blind+
+				"&mode="+mode+
+				//"&close_min_lum="+close_min_lum+
+				//"&close_min_temp="+close_min_temp+
+				"&blind_down_time="+blind_down_time+
+				"&blind_back_time="+blind_back_time+
+				"&max_sun_alt_shade="+max_sun_alt_shade+
+				"&blind_afternoon_time="+blind_afternoon_time+
+				"&max_sun_alt_open="+max_sun_alt_open+
+				"&blind_open_time="+blind_open_time;
+
+			//alert(request);
+
+			//  mode
+			// close_min_lum
+			// close_min_temp
+			// blind_down_time
+			// blind_back_time
+			// max_sun_alt_shade
+			// blind_afternoon_time
+			// max_sun_alt_open
+			// blind_open_time
+
+			xhttp.open("POST", "/api/update/"+blind, true);
+			xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhttp.send(request);
+			return false;
+		}
 	}
 </script>
 
@@ -71,19 +106,39 @@
 				<fieldset class="form-group">
 					<label for="mode">Maximální vítr</label>
 					<div class="input-group">
-						<input type="number" class="form-control" id="max_wind" placeholder="Time" value="10" min="-20" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Limitr pro vítr, kdy se žaluzie vytáhnou">
-						<span class="input-group-addon">speed</span>
+						<input type="number" class="form-control" id="max_wind" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Maximální rychlost větru", value="{{blinds['global']['max_wind']}}">
+						<span class="input-group-addon">spd</span>
 					</div>
 					<div class="input-group">
-						<input type="number" class="form-control" id="max_wind_delay" placeholder="Time" value="10" min="-20" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho po ustání větru mají ještě být žaluzie vytažené">
+						<input type="number" class="form-control" id="max_wind_delay" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho po ustání větru mají ještě být žaluzie vytažené" value="{{blinds['global']['max_wind_delay']}}">
 						<span class="input-group-addon">min</span>
 					</div>
 				</fieldset>
+				<fieldset class="form-group">
+					<label for="mode">Minimální teplota</label>
+					<div class="input-group">
+						<input type="number" class="form-control" id="min_temp" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální teplota pro stažení žaluzií", value="{{blinds['global']['min_temp']}}">
+						<span class="input-group-addon">C</span>
+					</div>
+				</fieldset>
+				<fieldset class="form-group">
+					<label for="mode">Slunečný den</label>
+					<div class="input-group">
+						<input type="number" class="form-control" id="min_light" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Při jaké minimální intenzitě slunečníhe svitu se žaluzie zatáhnou." value="{{blinds['global']['min_light']}}">
+						<span class="input-group-addon"> lux </span>
+					</div>
+					<div class="input-group">
+						<input type="number" class="form-control" id="min_light_delay" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho musí slunce svítit nad limit pro vytažení" value="{{blinds['global']['min_light_delay']}}">
+						<span class="input-group-addon">min</span>
+					</div>
+				</fieldset>
+  			    <button class="btn btn-info" href="#" onclick="node_setting_submit('global');">Uložit</button>
 			</form>
 	  		</div>
 	</div></div>
 
 {% for i, blind_id in enumerate(sorted(blinds)) %}
+{% if 'group' in blind_id%}
 {% set blind = blinds[blind_id]%}
 {% if blind['rw'] != 'd'%}
 
@@ -117,14 +172,14 @@
 					</fieldset>
 					<fieldset class="form-group">
 						<label for="Luminance">Zatažení žaluzií</label>
-						<div class="input-group">
+						<!--<div class="input-group">
 							<input type="number" class="form-control" id="close_min_lum{{blind_id}}" placeholder="Luminance" value="{{blind['close_min_lum']}}" min="0" max="100" step="1" data-toggle="tooltip" data-placement="bottom" title="Minimální osvětlení pro zatažení žaluzií">
 							<span class="input-group-addon">intenzita</span>
 						</div>
 						<div class="input-group">
 							<input type="number" class="form-control" id="close_min_temp{{blind_id}}" placeholder="Temperature" value="{{blind['close_min_temp']}}" min="0" max="50" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální vnitřní teplota pro zatažení žaluzií">
 							<span class="input-group-addon">C</span>
-						</div>
+						</div>-->
 						<div class="input-group">
 							<input type="number" class="form-control" id="blind_down_time{{blind_id}}" placeholder="Time" value="{{blind['blind_down_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas potřebný k sjetí žaluzií">
 							<span class="input-group-addon">ms</span>
@@ -178,6 +233,7 @@
   			Vypnuto
   		</div>
   	</div></div>
+{% end %}
 {% end %}
 {% end %}
 
