@@ -415,10 +415,10 @@ class controller(object):
         wind_limit_delay = int(rospy.get_param('/blind/global/max_wind_delay', 60*48)*60)
         mtime = time.time()
         damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-3600*24) )[0][0])
-        actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
+        actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 13 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
         print "actual wind", actual, "damage", damage
         if actual < wind_limit and damage > 1:
-            rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f." %(float(self.sunLoc.alt.degree)))
+            rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f&#176." %(float(self.sunLoc.alt.degree)))
             return True
         else:
             rospy.set_param('/blind/global/message', "wind alarm!!!")

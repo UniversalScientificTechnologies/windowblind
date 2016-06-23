@@ -1,0 +1,6 @@
+<launch>
+ <node name="brain" pkg="arom" type="aromBrain.py" />
+
+  <node name="pymlabserver" pkg="arom" type="ROSpymlabServer.py" />
+
+</launch>

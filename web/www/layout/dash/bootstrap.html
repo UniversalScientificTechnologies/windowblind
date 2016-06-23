@@ -168,18 +168,41 @@
                     <h4 class="modal-title"><b>AROM</b>: <b>a</b>utonomous <b>r</b>obotic <b>o</b>bservatory <b>m</b>anager</h4>
                 </div>
                 <div class="modal-body">
-                    <p>AROM je set malých programů postavených na systému ROS. AROM je software původně určený pro řízení astronomických dalekohledů a příslušenství observatoří. Díky své univerzálnosti lze AROM použít i na jiných systémech.</p>
-                    <p>Tento systém je vytvořen s hardwarem stavebnice <a href="http://www.mlab.cz/">MLAB</a>. </p>
+                    <p> AROM je software původně určený pro řízení astronomických dalekohledů a příslušenství observatoří. Díky své univerzálnosti lze AROM použít i na jiných systémech.</p>
+                    <p>Tento systém využívá hardware <a href="http://www.mlab.cz/">MLAB</a>. </p>
                     <a href="http://www.mlab.cz/"><img src="/img/mlab_logo.png"></a>
 
                     <br>
                     <br>
                     <hr>
 
-                    <h2>Používání Webového rozhraní AROM</h2>
-                    <p>
-                        Na levé straně je 
-                    </p>
+                    <h2>Webového rozhraní systému <b>AROM</b></h2>
+                        <h3>Home (základní stránka)</h3>
+                        <p>
+                        Home stránka slouží pro základní ovládání systému a data z jednotlivých senzorů <small>(načtení dat může chvíli trvat)</small>.
+                        </p>
+                        <h3>Nastavení</h3>
+                        <p>Do nastavení se dostanete pomocí tlačítek <code> windowBlind</code> a <code>weatherStation</code> v levém sloupci.</p> Nastavení je rozděleno do několika panelů. V prvním panelu je celkové nastavení. V dalších panelech je nastavení pro jednotlivá zařízení (okna).
+                        <br>
+                        <hr>
+                        <h5>Globální nastavení</h5>
+                        <center><img src="/img/settings_global.png"></img></center>
+                        <p>V první položce <code>Maximální vítr</code> lze nastavit limit, při kterém se žaluzie vytáhnou a jsou v tomto režimu drženy po dobu platnosti této podmínky. <code>Maximální vítr</code> se nastavuje pomocí dvou parametrů. </p><p>První <b><i>1</i></b>  určuje maximální rychlost větru.</p>
+                        <p>Druhý <b><i>2</i></b> určuje dobu, po kterou nesmí dojít k dalšímu překročení nastavených  limitů. Při překročení tohoto limitu je v levé části stránky napsáno upozornění.</p>
+
+                        <p>Druhá položka <code>Minimální teplota</code> určuje <b><i>3</i></b> minimální vnitřní teplotu při které se žaluzie v automatickém režimu zatáhnou.</p>
+
+                        <p>Třetí položka <code>Slunečný den</code> nastavuje, kdy žaluzie zůstanou vytažené na základě slunečního svitu. První <b><i>4</i></b> parametr nastavuje minimální sluneční svit a druhý <b><i>5</i></b> po jakou dobu musí Slunce svítit.</p>
+
+                        <br>
+                        <h5>Žaluzie okna X</h5>
+                        <center><img src="/img/settings_blind.png"></img></center>
+                        <p>V první <b>1</b> položce se nastavuje režim ovládání odpovídající skupiny žaluzií. Při manuálním režimu je brán ohled pouze na vítr.</p>
+                        <p>Druhá položka <code>Zatažení žaluzií</code> obsahuje dva časy. První <b>2</b> čas odpovídá potřebnému času pro sjetí žaluzií. Druhý <b>3</b> určuje čas pro narovnání žaluzií.</p>
+
+                        <p>Třetí položka <code>Vyrovnání žaluzií</code> obsahuje <b>4</b> výšku slunce na obzorem, při kterém dojde k přivření žaluzií. Druhá <b>5</b> položka obsahuje čas zavírání žaluzií.</p>
+
+                        <p>Čtvrtá položka <code>Vytažení žaluzií</code> obsahuje <b>6</b> výšku slunce při které dojde k vytažení žaluzií. Tento <b>7</b> čas je uveden jako druhý parametr.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

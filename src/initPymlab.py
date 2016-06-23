@@ -45,6 +45,7 @@ if __name__ == "__main__":
                 }       
     ])
 
+    rospy.wait_for_service('pymlab_init')
 
     msg_pymlab = rospy.Publisher('pymlab_server', PymlabServerStatusM, queue_size=10)
     rospy.init_node('pymlab_client', anonymous=True)

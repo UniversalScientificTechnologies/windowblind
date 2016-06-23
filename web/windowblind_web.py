@@ -314,7 +314,7 @@ class node(web.RequestHandler):
         print rospy.get_param('/blind')
         print "---------------"
 
-        self.render("www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
+        self.render("/home/odroid/robozor/src/windowblind/web/www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
 
 class Meteo(web.RequestHandler):
     def get(self, arg = None):
@@ -339,18 +339,18 @@ app = web.Application([
         #(r'/api/(.*)', DriverPage),
         #(r'/(.*)', bootstrap),
        
-        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '.www/media/favicon.ico'}),
-        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": './www/fonts/' }),
-        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": './www/lib/' }),
-        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": './www/media/' }),
-        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": './www/media/' }),
-        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": './www/media/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": './www/media/' }),
-        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": './www/fonts/' }),
-        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": './www/css/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": './www/wav/' }),
-        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": './www/json/' }),
-        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": './www/js/' }),
+        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '/home/odroid/robozor/src/windowblind/web/www/media/favicon.ico'}),
+        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/fonts/' }),
+        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/lib/' }),
+        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
+        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
+        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
+        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/fonts/' }),
+        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/css/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/wav/' }),
+        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/json/' }),
+        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/js/' }),
        #(r"/static/(.*)", web.StaticFileHandler, {"path": "/var/www"}),
         (r"/(.*)", Overview),
     ],

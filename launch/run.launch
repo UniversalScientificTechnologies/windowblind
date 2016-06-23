@@ -1,11 +1,12 @@
 <launch>
-  <node name="AromBrain" pkg="arom" type="aromBrain.py" args="/home/odroid/robozor/src/arom/cfg/test.json"/>
   <node name="pymlab" pkg="arom" type="ROSpymlabServer.py" />
-  <!-- <node name="web" pkg="windowblind" type="windowblind_web.py" /> -->
-  <!-- <node name="" pkg="arom" type="initPymlab.py" /> -->
+  <rosparam command="load" file="/home/odroid/robozor/parameters.yaml" />
+  <node name="AromBrain" pkg="arom" type="aromBrain.py" args="/home/odroid/robozor/src/arom/cfg/test.json"/>
+  <node name="web" pkg="windowblind" type="windowblind_web.py" />
 
-
-  <node name="weather" pkg="arom" type="weatherStation.py" args="aws"/>
+  <node name="weather" pkg="windowblind" type="weatherStation.py" args="aws"/>
   <node name="wb_guard" pkg="windowblind" type="windowblind.py" args="guard" />
   <node name="wb_controller" pkg="windowblind" type="windowblind.py" args="controller" />
+  <node name="i2cInit" pkg="windowblind" type="initPymlab.py" />
+
 </launch>

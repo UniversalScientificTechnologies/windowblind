@@ -106,29 +106,29 @@
 				<fieldset class="form-group">
 					<label for="mode">Maximální vítr</label>
 					<div class="input-group">
-						<input type="number" class="form-control" id="max_wind" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Maximální rychlost větru", value="{{blinds['global']['max_wind']}}">
+						<input type="number" class="form-control" id="max_wind" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Maximální rychlost větru, při které dojde k vytažení žaluzií", value="{{blinds['global']['max_wind']}}">
 						<span class="input-group-addon">spd</span>
 					</div>
 					<div class="input-group">
-						<input type="number" class="form-control" id="max_wind_delay" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho po ustání větru mají ještě být žaluzie vytažené" value="{{blinds['global']['max_wind_delay']}}">
+						<input type="number" class="form-control" id="max_wind_delay" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho po překročení rychlostního limitu mají žaluzie vytažené" value="{{blinds['global']['max_wind_delay']}}">
 						<span class="input-group-addon">min</span>
 					</div>
 				</fieldset>
 				<fieldset class="form-group">
 					<label for="mode">Minimální teplota</label>
 					<div class="input-group">
-						<input type="number" class="form-control" id="min_temp" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální teplota pro stažení žaluzií", value="{{blinds['global']['min_temp']}}">
-						<span class="input-group-addon">C</span>
+						<input type="number" class="form-control" id="min_temp" placeholder="Time" min="0" max="99999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální vnitřní teplota pro stažení žaluzií", value="{{blinds['global']['min_temp']}}">
+						<span class="input-group-addon">&#8451</span>
 					</div>
 				</fieldset>
 				<fieldset class="form-group">
 					<label for="mode">Slunečný den</label>
 					<div class="input-group">
-						<input type="number" class="form-control" id="min_light" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Při jaké minimální intenzitě slunečníhe svitu se žaluzie zatáhnou." value="{{blinds['global']['min_light']}}">
+						<input type="number" class="form-control" id="min_light" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální intenzitě slunečníhe svitu při které se žaluzie zatáhnou." value="{{blinds['global']['min_light']}}">
 						<span class="input-group-addon"> lux </span>
 					</div>
 					<div class="input-group">
-						<input type="number" class="form-control" id="min_light_delay" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho musí slunce svítit nad limit pro vytažení" value="{{blinds['global']['min_light_delay']}}">
+						<input type="number" class="form-control" id="min_light_delay" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho musí slunce svítit nad limit pro zatažení" value="{{blinds['global']['min_light_delay']}}">
 						<span class="input-group-addon">min</span>
 					</div>
 				</fieldset>
@@ -181,11 +181,11 @@
 							<span class="input-group-addon">C</span>
 						</div>-->
 						<div class="input-group">
-							<input type="number" class="form-control" id="blind_down_time{{blind_id}}" placeholder="Time" value="{{blind['blind_down_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas potřebný k sjetí žaluzií">
+							<input type="number" class="form-control" id="blind_down_time{{blind_id}}" placeholder="Time" value="{{blind['blind_down_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas potřebný k celkovému zatažení žaluzií">
 							<span class="input-group-addon">ms</span>
 						</div>
 						<div class="input-group">
-							<input type="number" class="form-control" id="blind_back_time{{blind_id}}" placeholder="Time" value="{{blind['blind_back_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas pro narovnání žaluzií do vodorovné polohy">
+							<input type="number" class="form-control" id="blind_back_time{{blind_id}}" placeholder="Time" value="{{blind['blind_back_time']}}" min="0" max="60000" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Čas pro narovnání žaluzií">
 							<span class="input-group-addon">ms</span>
 						</div>
 					</fieldset>
@@ -193,26 +193,26 @@
 					<fieldset class="form-group">
 						<label for="Temperature">Vyrovnání žaluzií</label>
 						<div class="input-group">
-							<input type="number" class="form-control" id="max_sun_alt_shade{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_shade']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce, kdy se žaluzie otevřou ještě více">
-							<span class="input-group-addon">Deg</span>
+							<input type="number" class="form-control" id="max_sun_alt_shade{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_shade']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce v úhlových stupních, kdy se žaluzie otevřou pootočí">
+							<span class="input-group-addon">&#176</span>
 						</div>
 						<div class="input-group">
-							<input type="number" class="form-control" id="blind_afternoon_time{{blind_id}}" placeholder="Time" value="{{blind['blind_afternoon_time']}}"  min="100" max="60000" step="100" data-toggle="tooltip" data-placement="bottom" title="čas potřebný pro pootočení žaluzií">
+							<input type="number" class="form-control" id="blind_afternoon_time{{blind_id}}" placeholder="Time" value="{{blind['blind_afternoon_time']}}"  min="100" max="60000" step="100" data-toggle="tooltip" data-placement="bottom" title="Doba požadovaná pro pootočení žaluzií">
 							<span class="input-group-addon">ms</span>
 						</div>
-						<small class="text-muted">Výška slunce (před západem), kdy se žaluzie narovnají.</small>
+						<!--<small class="text-muted">Výška slunce (před západem), kdy se žaluzie narovnají.</small>-->
 					</fieldset>
 					<fieldset class="form-group">
 						<label for="Temperature">Vytažení žaluzií</label>
 						<div class="input-group">
-							<input type="number" class="form-control" id="max_sun_alt_open{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_open']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce, kdy se žaluzie kompletně vytáhnou">
-							<span class="input-group-addon">Deg</span>
+							<input type="number" class="form-control" id="max_sun_alt_open{{blind_id}}" placeholder="Angle" value="{{blind['max_sun_alt_open']}}"  min="-45" max="90" step="1" data-toggle="tooltip" data-placement="bottom" title="Výška slunce nad horizontem, kdy se žaluzie kompletně vytáhnou">
+							<span class="input-group-addon">&#176</span>
 						</div>
 						<div class="input-group">
-							<input type="number" class="form-control" id="blind_open_time{{blind_id}}" placeholder="Time" value="{{blind['blind_open_time']}}"  min="100" max="60000" step="100" step="100" data-toggle="tooltip" data-placement="bottom" title="čas potřebný pro kompletní vytažení žaluzií">
+							<input type="number" class="form-control" id="blind_open_time{{blind_id}}" placeholder="Time" value="{{blind['blind_open_time']}}"  min="100" max="60000" step="100" step="100" data-toggle="tooltip" data-placement="bottom" title="čas potřebný pro celkové vytažení žaluzií">
 							<span class="input-group-addon">ms</span>
 						</div>
-						<small class="text-muted">Výška slunce (před západem), kdy se žaluzie vytáhnou.</small>
+						<!--<small class="text-muted">Výška slunce (před západem), kdy se žaluzie vytáhnou.</small>-->
 					</fieldset>
 					
   					<button class="btn btn-info" href="#" onclick="node_setting_submit('{{blind_id}}');">Uložit</button>
