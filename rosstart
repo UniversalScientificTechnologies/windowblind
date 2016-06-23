@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# umistit do /etc/init.d/rosstart a naimportovat do systemu
 . /etc/init.d/functions
 
 start () {
