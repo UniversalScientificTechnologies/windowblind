@@ -49,36 +49,38 @@ def get_devices():
 
 
 def _sql(query, read=False):
-        print "#>", query
-        connection = mdb.connect(host="localhost", user="root", passwd="root", db="AROM", use_unicode=True, charset="utf8")
-        cursorobj = connection.cursor()
-        result = None
-        try:
-                cursorobj.execute(query)
-                result = cursorobj.fetchall()
-                if not read:
-                    connection.commit()
-        except Exception, e:
-                print "Err", e
-        connection.close()
-        return result
-
+	try:
+            print "#>", query
+            connection = mdb.connect(host="localhost", user="root", passwd="root", db="AROM", use_unicode=True, charset="utf8")
+            cursorobj = connection.cursor()
+            result = None
+            try:
+                    cursorobj.execute(query)
+                    result = cursorobj.fetchall()
+                    if not read:
+                        connection.commit()
+            except Exception, e:
+                    print "Err", e
+            connection.close()
+            return result
+        except e:
+            return [[0]]
 
 class Overview(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, addres=None):
-        print "web", addres
+        #print "web", addres
         self.render("www/layout/dash/publicOverview.html", title = "AROM", leftmenu = leftmenu, actual = '#', _sql=_sql)
 
 
 class Observatory(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, addres=None):
-        print "web", addres
+        #print "web", addres
         self.render("www/layout/dash/observatory.html", title = "AROM control center | observatory", leftmenu = leftmenu, actual = 'observatory', _sql=_sql)
 
 class Obs_weather_datatable(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, addres=None):
         arg_data = self.get_argument('data', False)
         arg_type = self.get_argument('type', False)
@@ -96,7 +98,7 @@ class Obs_weather_datatable(web.RequestHandler):
             pass
         else:
             data = _sql('SELECT weather.id, weather.date, weather.sensors_id, weather.value, sensors.sensor_name, sensors.sensor_quantity_mark FROM weather JOIN sensors ON weather.sensors_id = sensors.sensors_id WHERE (date > %f) GROUP BY sensors_id ORDER BY weather.sensors_id;' %(Time.now().unix-60))
-            print data
+            #print data
             string = '<table class="table">'
             for row in data:
                 string += '<tr><td>'+datetime.datetime.fromtimestamp(float(row[1])).strftime('%Y-%m-%d %H:%M:%S')+'</td><td>'+str(row[4])+'</td><td>'+str(row[2])+'</td><td>'+str(row[3])+" "+row[5]+'</td></tr>'
@@ -106,14 +108,14 @@ class Obs_weather_datatable(web.RequestHandler):
 
 
 class processing(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, arg = None):
         rospy.logerr("processing")
         print "processing", arg
         coord = self.get_argument("coord", False)
         if coord:
             param = eval(coord)
-            print "param", param
+            #print "param", param
             if param['typ'] == 'AltAz2RaDec':
                 out = SkyCoord(alt=param['alt'], az=param['az'], unit='deg', obstime = Time.now(), frame = 'altaz', location = observatory)
                 sout = {
@@ -122,7 +124,7 @@ class processing(web.RequestHandler):
                     #"alt": param['alt'],
                     #"az": param['az'],
                     }
-                print sout
+                #print sout
                 self.finish(escape.json_encode(sout))
 
                 
@@ -139,24 +141,24 @@ class processing(web.RequestHandler):
 
 
 class BlindApi(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, address=None):
         print "############################"
         address = address.split("/")
         print "web", address
 
         if address[0] == 'weather':
-            print "WEATHER"
+            print "WEATHER",
             if address[1] == 'maxWindLast':
                 data = _sql('SELECT weather.id, weather.date, max(weather.value), sensors.sensor_name, sensors.sensor_quantity_mark FROM weather JOIN sensors ON weather.sensors_id = sensors.sensors_id WHERE (date > %f) GROUP BY sensors_id ORDER BY weather.sensors_id;' %(Time.now().unix-address[3]*60))
-                print data
+                #print data
                 self.render(data)
 
             else:
                 arg_data = self.get_argument('data', False)
                 arg_type = self.get_argument('type', False)
                 arg_sens = self.get_argument('sens', 0)
-                print arg_type, arg_data, "---------"
+                #print arg_type, arg_data, "---------"
                 if arg_data == 'weather' and arg_type == 'json':
                     data = _sql('SELECT date, avg(value), sensors_id from weather GROUP BY date div (60*10), sensors_id  ORDER BY date;')
                     self.write('[\n\r['+str(float(data[0][0])*1000)+','+str(round(float(data[0][1]),3))+','+str(round(float(data[0][2]),3))+']')
@@ -169,7 +171,7 @@ class BlindApi(web.RequestHandler):
                     pass
                 else:
                     data = _sql('SELECT weather.id, weather.date, weather.sensors_id, weather.value, sensors.sensor_name, sensors.sensor_quantity_mark FROM weather JOIN sensors ON weather.sensors_id = sensors.sensors_id WHERE (date > %f) GROUP BY sensors_id ORDER BY weather.sensors_id;' %(Time.now().unix-60))
-                    print data
+                    #print data
                     string = '<table class="table">'
                     for row in data:
                         string += '<tr><td>'+datetime.datetime.fromtimestamp(float(row[1])).strftime('%Y-%m-%d %H:%M:%S')+'</td><td>'+str(row[4])+'</td><td>'+str(row[2])+'</td><td>'+str(round(float(row[3]),2))+" "+row[5]+'</td></tr>'
@@ -190,7 +192,7 @@ class BlindApi(web.RequestHandler):
         address = address.split("/")
         if address[0] == 'update':
             print "UPDATE POST"
-            print address
+            #print address
 
             id = self.get_argument('id')
 
@@ -240,7 +242,7 @@ class BlindApi(web.RequestHandler):
                 rospy.set_param('/blind/'+id+"/blind_open_time", blind_open_time)
 
             try:
-                os.system("rosparam dump /home/odroid/robozor/parameters.yaml")
+                os.system("rosparam dump /home/odroid/ros_ws/parameters.yaml")
             except Exception, e:
                 raise e
 
@@ -268,30 +270,38 @@ class BlindApi(web.RequestHandler):
 
 
 class bootstrap(web.RequestHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self, arg=None, path = None):
-        print "Bootstrap page"
-        print "-----------------"
-        devices = get_devices()
-        print arg, path, devices
-        driver = None
-        properties = None
-
         try:
-            #driver = eval(devices.data)[arg]
-            #service = rospy.ServiceProxy(eval(devices.data)[arg]['service'], windowblind.srv.DriverControl)
-            #properties = eval(service(name = 'advGetSetting', type = 'function', data = '', validate = '', check = '', done = True).data)
-            #print properties
-            pass
+            print "Bootstrap page"
+            print "-----------------"
+            devices = get_devices()
+            #print arg, path, devices
+            driver = None
+            properties = None
 
+            try:
+                #driver = eval(devices.data)[arg]
+                #service = rospy.ServiceProxy(eval(devices.data)[arg]['service'], windowblind.srv.DriverControl)
+                #properties = eval(service(name = 'advGetSetting', type = 'function', data = '', validate = '', check = '', done = True).data)
+                #print properties
+                pass
+
+            except Exception, e:
+                rospy.logerr(e)
+
+            self.render("www/layout/dash/bootstrap.html", _sql=_sql, devices = devices, blinds = rospy.get_param('/blind'))
         except Exception, e:
             rospy.logerr(e)
-
-        self.render("www/layout/dash/bootstrap.html", _sql=_sql, devices = devices, blinds = rospy.get_param('/blind'))
+            self.finish("Error v bot_set")
 
 class bootstrap_setting(web.RequestHandler):
     def get(self):
-        self.render("www/layout/dash/bootstrap_setting.html", _sql=_sql, devices = get_devices(), blinds = rospy.get_param('/blind'))
+        try:
+            self.render("www/layout/dash/bootstrap_setting.html", _sql=_sql, devices = get_devices(), blinds = rospy.get_param('/blind'))
+        except Exception, e:
+            rospy.logerr(e)
+            self.finish("Error v bot_set")
 
 class node(web.RequestHandler):
     def get(self, arg = None):
@@ -309,18 +319,27 @@ class node(web.RequestHandler):
         except Exception, e:
             rospy.logerr(e)
 
-        print properties
-        print "---------------"
-        print rospy.get_param('/blind')
-        print "---------------"
+        #print properties
+        #print "---------------"
+        #print rospy.get_param('/blind')
+        #print "---------------"
 
-        self.render("/home/odroid/robozor/src/windowblind/web/www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
+        self.render("/home/odroid/ros_ws/src/windowblind/web/www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
 
 class Meteo(web.RequestHandler):
     def get(self, arg = None):
         if arg == None:
-            print arg
+            #print arg
             self.finish('meteo meteo stránka :) :' + repr(arg))
+        else:
+            self.finish('stranka pro parametry :' + repr(arg))
+
+
+class download(web.RequestHandler):
+    def get(self, arg = None):
+        if arg == None:
+            #print arg
+            self.finish('Download page :) :' + repr(arg))
         else:
             self.finish('stranka pro parametry :' + repr(arg))
 
@@ -334,32 +353,34 @@ app = web.Application([
         (r'/api/(.*)', BlindApi),
         (r'/meteo', Meteo),
         (r'/meteo/(.*)', Meteo),
+        (r'/download/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/' }),
         #(r'/', bootstrap),
         #(r'/setting', bootstrap_setting),
         #(r'/api/(.*)', DriverPage),
         #(r'/(.*)', bootstrap),
        
-        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '/home/odroid/robozor/src/windowblind/web/www/media/favicon.ico'}),
-        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/fonts/' }),
-        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/lib/' }),
-        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
-        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
-        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/media/' }),
-        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/fonts/' }),
-        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/css/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/wav/' }),
-        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/json/' }),
-        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": '/home/odroid/robozor/src/windowblind/web/www/js/' }),
+        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '/home/odroid/ros_ws/src/windowblind/web/www/media/favicon.ico'}),
+        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/fonts/' }),
+        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/lib/' }),
+        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/fonts/' }),
+        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/css/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/wav/' }),
+        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/json/' }),
+        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/js/' }),
        #(r"/static/(.*)", web.StaticFileHandler, {"path": "/var/www"}),
         (r"/(.*)", Overview),
     ],
     cookie_secret="IrehaxnWrArwyrcfvQvixnAnFirgr",
     debug=True,
-    autoreload=True)
+    autoreload=True
+    )
 
 def main():
-    app.listen(8080)
+    app.listen(5252)
     tornado.ioloop.IOLoop.current().start()
 
 

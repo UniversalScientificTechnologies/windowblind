@@ -124,11 +124,11 @@
 				<fieldset class="form-group">
 					<label for="mode">Slunečný den</label>
 					<div class="input-group">
-						<input type="number" class="form-control" id="min_light" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální intenzitě slunečníhe svitu při které se žaluzie zatáhnou." value="{{blinds['global']['min_light']}}">
+						<input type="number" class="form-control" id="min_light" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Minimální intenzita slunečního svitu při které se žaluzie zatáhnou." value="{{blinds['global']['min_light']}}">
 						<span class="input-group-addon"> lux </span>
 					</div>
 					<div class="input-group">
-						<input type="number" class="form-control" id="min_light_delay" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho musí slunce svítit nad limit pro zatažení" value="{{blinds['global']['min_light_delay']}}">
+						<input type="number" class="form-control" id="min_light_delay" placeholder="Time" min="0" max="9999" step="0.1" data-toggle="tooltip" data-placement="bottom" title="Jak dlouho musí Slunce svítit nad limit pro zatažení" value="{{blinds['global']['min_light_delay']}}">
 						<span class="input-group-addon">min</span>
 					</div>
 				</fieldset>
@@ -237,5 +237,13 @@
 {% end %}
 {% end %}
 
-
+	<div class="col-sm-4 col-xs-12"><div class="panel panel-default" id="{{blind}}">
+		<div class="panel-heading">
+    		<h3 class="panel-title">Nastavení</h3>
+  		</div>
+  		<div class="panel-body" id="nastaveni_body">
+  		<a href="/download/parameters.yaml"><button type="button" class="btn btn-secondary"> Stáhnout </button></a>
+  			
+  		</div>
+  	</div></div>
 <hr>
