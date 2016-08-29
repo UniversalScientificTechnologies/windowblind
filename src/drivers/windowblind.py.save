@@ -416,13 +416,13 @@ class controller(object):
         return result
 
     def isWindOk(self):
-        wind_limit = float(rospy.get_param('/blind/global/max_wind', 60))
-        wind_limit_delay = float(rospy.get_param('/blind/global/max_wind_delay', 60*48) * 60)
+        #wind_limit = int(rospy.get_param('/blind/global/max_wind', 60))
+        wind_limit_delay = int(rospy.get_param('/blind/global/max_wind_delay', 60*48)*60)
         mtime = time.time()
         #damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 3 and date > %f;' %int(mtime-3600*24) )[0][0])
-        actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 3 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
+        actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 3 and date > %f;' %int(mtime- ) )[0][0])
         #print "actual wind", actual, "damage", damage
-        if float(actual) < wind_limit or True:
+        if float(actual) < wind_limit:
             rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %.2f." %(float(self.sunLoc.alt.degree)))
             return True
         else:

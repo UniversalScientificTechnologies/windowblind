@@ -260,24 +260,24 @@ class AWS01B(weatherStation):
 
 
     # WIND
-
+        '''
         #rospy.set_param("weatherStation", str(self.variables))
         #rospy.loginfo('LTS: %s, sht31.temp: %s, sht31.humi: %s' %(str(AWS_LTS_temp_ref), str(TempHum[0]), str(TempHum[1])))
 
         angles = np.zeros(5)
         angles[4] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
+        #time.sleep(0.01)
         angles[3] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
+        #time.sleep(0.01)
         angles[2] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
+        #time.sleep(0.01)
         angles[1] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
         n = 0
         speed = 0
         AVERAGING = 50
 
         for i in range(AVERAGING):
-            time.sleep(0.01)
+            #time.sleep(0.01)
             angles[0] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
             
             if (angles[0] + n*360 - angles[1]) > 300:
@@ -295,7 +295,10 @@ class AWS01B(weatherStation):
             angles = np.roll(angles, 1)
 
         #speed = speed/AVERAGING             # apply averaging on acummulated value.
-        
+        '''
+        speed = eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value)*6
+
+
         rospy.loginfo('OUT: %s-C%%, %s-lux, %s-mps, IN: %s-C-%%' %(str(TempHumOut), str(Light), str(speed), str(TempHumIn)))
 
         data_time = Time.now().unix
