@@ -261,7 +261,6 @@ class AWS01B(weatherStation):
     # WIND
         speed = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
         
-
         rospy.loginfo('OUT: %s-C%%, %s-lux, %s-mps, IN: %s-C-%%' %(str(TempHumOut), str(Light), str(speed), str(TempHumIn)))
 
         data_time = Time.now().unix
