@@ -22,26 +22,24 @@ if __name__ == "__main__":
                     "type":           "sht31",
                     "address":        0x45
                 },
-
                 {
                     "name":           "AWS_humi",
                     "type":           "sht31",
                     "address":        0x44
                 },
-
                 {
                     "name":           "AWS_wind_s",
                     "type":           "rps01"
                 },
-
                 {
                     "name":          "AWS_light",
                     "type":          "isl03"
                 },
-
                 {
                     "name":           "blind",
-                    "type":           "TCA6416A"
+                    #"type":           "TCA6416A"
+                    "type":           "I2CIO_TCA9535",
+                    "address":        0x27,
                 }       
     ])
 

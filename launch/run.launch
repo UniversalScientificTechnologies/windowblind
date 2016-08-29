@@ -1,6 +1,6 @@
 <launch>
   <node name="pymlab" pkg="arom" type="ROSpymlabServer.py" />
-  <rosparam command="load" file="/home/odroid/robozor/parameters.yaml" />
+  <!--<rosparam command="load" file="/home/odroid/robozor/parameters.yaml" />-->
   <node name="AromBrain" pkg="arom" type="aromBrain.py" args="/home/odroid/robozor/src/arom/cfg/test.json"/>
   <node name="web" pkg="windowblind" type="windowblind_web.py" />
 

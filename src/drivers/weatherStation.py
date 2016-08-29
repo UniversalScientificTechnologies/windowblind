@@ -258,44 +258,10 @@ class AWS01B(weatherStation):
     # Light
         Light = eval(self.pymlab(device="AWS_light", method="get_lux", parameters=None).value)/10
 
-
     # WIND
-
-        #rospy.set_param("weatherStation", str(self.variables))
-        #rospy.loginfo('LTS: %s, sht31.temp: %s, sht31.humi: %s' %(str(AWS_LTS_temp_ref), str(TempHum[0]), str(TempHum[1])))
-
-        angles = np.zeros(5)
-        angles[4] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
-        angles[3] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
-        angles[2] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        time.sleep(0.01)
-        angles[1] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-        n = 0
-        speed = 0
-        AVERAGING = 50
-
-        for i in range(AVERAGING):
-            time.sleep(0.01)
-            angles[0] = eval(self.pymlab(device="AWS_wind_s", method="get_angle", parameters='').value)
-            
-            if (angles[0] + n*360 - angles[1]) > 300:
-                n -= 1
-                angles[0] = angles[0] + n*360
-
-            elif (angles[0] + n*360 - angles[1]) < -300:  # compute angular speed in backward direction.
-                n += 1
-                angles[0] = angles[0] + n*360
-
-            else:
-                angles[0] = angles[0] + n*360
-            
-            speed += (-angles[4] + 8*angles[3] - 8*angles[1] + angles[0])/12
-            angles = np.roll(angles, 1)
-
-        #speed = speed/AVERAGING             # apply averaging on acummulated value.
+        speed = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
         
+
         rospy.loginfo('OUT: %s-C%%, %s-lux, %s-mps, IN: %s-C-%%' %(str(TempHumOut), str(Light), str(speed), str(TempHumIn)))
 
         data_time = Time.now().unix
@@ -309,10 +275,10 @@ class AWS01B(weatherStation):
                 {'value':calc_dewpoint(TempHumOut[0], TempHumOut[1]), 'name':'AWS_dewpoint', 'guantity': 'C', 'time': data_time},
                 {'value':calc_dewpoint(TempHumIn[0], TempHumIn[1]), 'name':'IN_dewpoint', 'guantity': 'C', 'time': data_time}]
 
-
-
     def connect(self):
         pass
+
+
 ############################################################################################################################################################################
 ############################################################################################################################################################################
 ############################################################################################################################################################################
