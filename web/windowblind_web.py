@@ -66,6 +66,10 @@ def _sql(query, read=False):
         except e:
             return [[0]]
 
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+
 class Overview(web.RequestHandler):
     #@tornado.web.asynchronous
     def get(self, addres=None):
@@ -175,6 +179,7 @@ class BlindApi(web.RequestHandler):
                     string = '<table class="table">'
                     for row in data:
                         string += '<tr><td>'+datetime.datetime.fromtimestamp(float(row[1])).strftime('%Y-%m-%d %H:%M:%S')+'</td><td>'+str(row[4])+'</td><td>'+str(row[2])+'</td><td>'+str(round(float(row[3]),2))+" "+row[5]+'</td></tr>'
+                        #string += '<br>' + str(row)
                     string += '</table>'
                     self.finish(string)
 
@@ -242,7 +247,7 @@ class BlindApi(web.RequestHandler):
                 rospy.set_param('/blind/'+id+"/blind_open_time", blind_open_time)
 
             try:
-                os.system("rosparam dump /home/odroid/ros_ws/parameters.yaml")
+                os.system("rosparam dump /home/odroid/rosws/parameters.yaml")
             except Exception, e:
                 raise e
 
@@ -305,26 +310,38 @@ class bootstrap_setting(web.RequestHandler):
 
 class node(web.RequestHandler):
     def get(self, arg = None):
+        if not self.get_cookie("user"):
+            devices = get_devices()
+            driver = None
+            properties = None
 
-        devices = get_devices()
-        driver = None
-        properties = None
+            try:
+                driver = eval(devices.data)[arg]
+                service = rospy.ServiceProxy(eval(devices.data)[arg]['service'], windowblind.srv.DriverControl)
+                properties = eval(service(name = 'advGetSetting', type = 'function', data = '', validate = '', check = '', done = True).data)
+                print properties
 
-        try:
-            driver = eval(devices.data)[arg]
-            service = rospy.ServiceProxy(eval(devices.data)[arg]['service'], windowblind.srv.DriverControl)
-            properties = eval(service(name = 'advGetSetting', type = 'function', data = '', validate = '', check = '', done = True).data)
-            print properties
+            except Exception, e:
+                rospy.logerr(e)
 
-        except Exception, e:
-            rospy.logerr(e)
+            self.render("/home/odroid/rosws/src/windowblind/web/www/layout/dash/node_setting_public.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
 
-        #print properties
-        #print "---------------"
-        #print rospy.get_param('/blind')
-        #print "---------------"
 
-        self.render("/home/odroid/ros_ws/src/windowblind/web/www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
+        else:
+            devices = get_devices()
+            driver = None
+            properties = None
+
+            try:
+                driver = eval(devices.data)[arg]
+                service = rospy.ServiceProxy(eval(devices.data)[arg]['service'], windowblind.srv.DriverControl)
+                properties = eval(service(name = 'advGetSetting', type = 'function', data = '', validate = '', check = '', done = True).data)
+                print properties
+
+            except Exception, e:
+                rospy.logerr(e)
+
+            self.render("/home/odroid/rosws/src/windowblind/web/www/layout/dash/node_setting.html", arg = arg, driver = driver, properties = properties, blinds = rospy.get_param('/blind'))
 
 class Meteo(web.RequestHandler):
     def get(self, arg = None):
@@ -343,7 +360,25 @@ class download(web.RequestHandler):
         else:
             self.finish('stranka pro parametry :' + repr(arg))
 
+class LoginHandler(BaseHandler):
+    def get(self):
+        self.write('<html><body><form action="/login" method="post">'
+                   'Name: <input type="text" name="name"><br>'
+                   'Pass: <input type="password" name="pass"><br>'
+                   '<input type="submit" value="Sign in">'
+                   '</form></body></html>')
+    
+    def post(self):
+        if self.get_argument("name") == 'blind' and self.get_argument("pass") == 'blind':
+            self.set_secure_cookie("user", 'Admin')
+            self.redirect("/")
+        else:
+            self.redirect("/login")
 
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("user")
+        self.redirect("/")
         
 
 app = web.Application([
@@ -353,25 +388,27 @@ app = web.Application([
         (r'/api/(.*)', BlindApi),
         (r'/meteo', Meteo),
         (r'/meteo/(.*)', Meteo),
-        (r'/download/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/' }),
+        (r'/download/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/' }),
         #(r'/', bootstrap),
         #(r'/setting', bootstrap_setting),
         #(r'/api/(.*)', DriverPage),
         #(r'/(.*)', bootstrap),
        
-        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '/home/odroid/ros_ws/src/windowblind/web/www/media/favicon.ico'}),
-        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/fonts/' }),
-        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/lib/' }),
-        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
-        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
-        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/media/' }),
-        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/fonts/' }),
-        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/css/' }),
-        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/wav/' }),
-        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/json/' }),
-        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": '/home/odroid/ros_ws/src/windowblind/web/www/js/' }),
+        (r'/(favicon.ico)', web.StaticFileHandler, {'path': '/home/odroid/rosws/src/windowblind/web/www/media/favicon.ico'}),
+        (r'/fonts/(.*)', tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/fonts/' }),
+        (r"/lib/(.*)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/lib/' }),
+        (r"/(.*\.png)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.jpg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.ogg)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/media/' }),
+        (r"/(.*\.woff2)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/fonts/' }),
+        (r"/(.*\.css)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/css/' }),
+        (r"/(.*\.wav)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/wav/' }),
+        (r"/(.*\.json)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/json/' }),
+        (r"/(.*\.js)", tornado.web.StaticFileHandler,{"path": '/home/odroid/rosws/src/windowblind/web/www/js/' }),
        #(r"/static/(.*)", web.StaticFileHandler, {"path": "/var/www"}),
+        (r"/login", LoginHandler),
+        (r"/logout", LogoutHandler),
         (r"/(.*)", Overview),
     ],
     cookie_secret="IrehaxnWrArwyrcfvQvixnAnFirgr",

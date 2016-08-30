@@ -279,7 +279,7 @@ class window(object):
 
         #sepne spravny okruh smerem dolu
         state = 0b0 ^ (0b1 << group_num*2+1)
-        pymlab(device="blind", method="set_ports", parameters=str((~state, 0x00000000)))
+        self.pymlab(device="blind", method="set_ports", parameters=str((~state, 0x00000000)))
         #ceka se pozadovany cas
         time.sleep(delay)
         self.pymlab(device="blind", method="set_ports", parameters=str((~0x00000000, 0x00000000)))
