@@ -37,9 +37,8 @@ if __name__ == "__main__":
                 },
                 {
                     "name":           "blind",
-                    #"type":           "TCA6416A"
-                    "type":           "I2CIO_TCA9535",
-                    "address":        0x27,
+                    "type":           "TCA6416A"
+                    #"type":           "I2CIO_TCA9535", "address":        0x27,
                 }       
     ])
 
