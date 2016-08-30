@@ -1,0 +1,64 @@
+ObservatoryConfig: {file: /home/odroid/ros_ws/src/arom/cfg/test.json}
+blind:
+  global: {max_wind: '50', max_wind_delay: '10', message: "syst\xE9m funguje, v\xFD\
+      \u0161ka Slunce je 23.73.", min_light: '3000', min_light_delay: '50', min_temp: '22'}
+  group01: {blind_afternoon_time: '1000', blind_back_time: '1000', blind_down_time: '110000',
+    blind_open_time: '130000', change: false, close_min_lum: 50, close_min_temp: 20,
+    description: '', max_sun_alt_open: '10', max_sun_alt_shade: '45', mode: manual,
+    msg_name: group01, name: "\u017Ealuzie okna A", rotation: 0, rotation_driver: 0,
+    rw: r, status: open, status_driver: open}
+  group02: {blind_afternoon_time: '600', blind_back_time: '1000', blind_down_time: '105000',
+    blind_open_time: '125000', change: false, close_min_lum: 50, close_min_temp: 20,
+    description: '', max_sun_alt_open: '10', max_sun_alt_shade: '45', mode: manual,
+    msg_name: group02, name: "\u017Ealuzie okna B", rotation: 1000, rotation_driver: 1000,
+    rw: r, status: close, status_driver: close}
+  group03: {blind_afternoon_time: '1000', blind_back_time: '1000', blind_down_time: '70000',
+    blind_open_time: '70000', change: false, close_min_lum: 50, close_min_temp: 20,
+    description: '', max_sun_alt_open: '3', max_sun_alt_shade: '5', mode: manual,
+    msg_name: group03, name: "\u017Ealuzie okna C", rotation: 0, rotation_driver: 0,
+    rw: r, status: open, status_driver: open}
+  group04: {blind_afternoon_time: '1000', blind_back_time: '1000', blind_down_time: '70000',
+    blind_open_time: '70000', change: false, close_min_lum: 50, close_min_temp: 20,
+    description: '', max_sun_alt_open: '10', max_sun_alt_shade: '45', mode: manual,
+    msg_name: group04, name: "\u017Ealuzie okna D", rotation: 1000, rotation_driver: 1000,
+    rw: r, status: close, status_driver: close}
+  group05: {blind_afternoon_time: 100, blind_back_time: 100, blind_down_time: 5000,
+    blind_open_time: 6000, change: false, close_min_lum: 50, close_min_temp: 20, description: '',
+    max_sun_alt_open: 10, max_sun_alt_shade: 45, mode: manual, msg_name: group05,
+    name: "\u017Ealuzie okna E", rotation: 0, rw: d, status: disabled}
+  group06: {blind_afternoon_time: 100, blind_back_time: 100, blind_down_time: 5000,
+    blind_open_time: 6000, change: false, close_min_lum: 50, close_min_temp: 20, description: '',
+    max_sun_alt_open: 10, max_sun_alt_shade: 45, mode: manual, msg_name: group06,
+    name: "\u017Ealuzie okna F", rotation: 0, rw: d, status: disabled}
+  group07: {blind_afternoon_time: 100, blind_back_time: 100, blind_down_time: 5000,
+    blind_open_time: 6000, change: false, close_min_lum: 50, close_min_temp: 20, description: '',
+    max_sun_alt_open: 10, max_sun_alt_shade: 45, mode: manual, msg_name: group07,
+    name: "\u017Ealuzie okna G", rotation: 0, rw: d, status: disabled}
+  group08: {blind_afternoon_time: 100, blind_back_time: 100, blind_down_time: 5000,
+    blind_open_time: 6000, change: false, close_min_lum: 50, close_min_temp: 20, description: '',
+    max_sun_alt_open: 10, max_sun_alt_shade: 45, mode: manual, msg_name: group08,
+    name: "\u017Ealuzie okna H", rotation: 0, rw: d, status: disabled}
+rosdistro: 'jade
+
+  '
+roslaunch:
+  uris: {host_0_0_0_0__32919: 'http://0.0.0.0:32919/', host_0_0_0_0__35427: 'http://0.0.0.0:35427/',
+    host_0_0_0_0__36386: 'http://0.0.0.0:36386/', host_0_0_0_0__37925: 'http://0.0.0.0:37925/',
+    host_0_0_0_0__38179: 'http://0.0.0.0:38179/', host_0_0_0_0__43212: 'http://0.0.0.0:43212/',
+    host_0_0_0_0__44586: 'http://0.0.0.0:44586/', host_0_0_0_0__46685: 'http://0.0.0.0:46685/',
+    host_0_0_0_0__47264: 'http://0.0.0.0:47264/', host_0_0_0_0__48100: 'http://0.0.0.0:48100/',
+    host_0_0_0_0__54372: 'http://0.0.0.0:54372/', host_0_0_0_0__57020: 'http://0.0.0.0:57020/',
+    host_0_0_0_0__57724: 'http://0.0.0.0:57724/', host_0_0_0_0__57932: 'http://0.0.0.0:57932/',
+    host_blind__33539: 'http://blind:33539/', host_blind__34526: 'http://blind:34526/',
+    host_blind__36852: 'http://blind:36852/', host_blind__37388: 'http://blind:37388/',
+    host_blind__37461: 'http://blind:37461/', host_blind__38509: 'http://blind:38509/',
+    host_blind__38920: 'http://blind:38920/', host_blind__40176: 'http://blind:40176/',
+    host_blind__41501: 'http://blind:41501/', host_blind__54058: 'http://blind:54058/',
+    host_blind__54528: 'http://blind:54528/', host_blind__55919: 'http://blind:55919/',
+    host_blind__56000: 'http://blind:56000/', host_blind__57202: 'http://blind:57202/',
+    host_blind__58868: 'http://blind:58868/', host_blind__59670: 'http://blind:59670/',
+    host_telescopec__39580: 'http://telescopeC:39580/'}
+rosversion: '1.11.16
+
+  '
+run_id: f7abdb40-39dd-11e6-9e41-001e06101456

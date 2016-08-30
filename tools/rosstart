@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# umistit do /etc/init.d/rosstart a naimportovat do systemu
+
+start () {
+
+  . /home/odroid/rosws/devel/setup.bash
+  export ROS_PACKAGE_PATH=/opt/ros/jade/share:/opt/ros/jade/stacks:/home/odroid/rosws/src:$ROS_PACKAGE_PATH
+  export HOME=/home/odroid
+  export ROS_HOME=/home/odroid/.ros
+
+  source /home/odroid/rosws/devel/setup.bash
+  roscore &
+  sleep 5
+  . /home/odroid/rosws/tools/start_windowblind.sh
+}
+
+case "$1" in
+  start)
+        start
+	;;
+esac
+exit 0
