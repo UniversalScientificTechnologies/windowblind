@@ -20,14 +20,14 @@ cd /home/odroid/
 #echo "${PWD##*/}" >> ${LOG_FILE}
 
 #. /robozor/devel/setup.bash
-. /home/odroid/ros_ws/devel/setup.bash
+. /home/odroid/rosws/devel/setup.bash
 #sleep 3
 #screen -S core -d -m roscore
 
 sleep 5
 screen -S bridge -d -m roslaunch rosbridge_server rosbridge_websocket.launch
-rosparam load /home/odroid/ros_ws/parameters.yaml
-screen -S aromBrain -d -m rosrun arom aromBrain.py /home/odroid/ros_ws/src/arom/cfg/test.json 
+rosparam load /home/odroid/rosws/tools/parameters_blind.yaml
+screen -S aromBrain -d -m rosrun arom aromBrain.py /home/odroid/ros_ws/src/arom/cfg/test.json
 screen -S pymlab -d -m rosrun arom ROSpymlabServer.py
 
 sleep 10
