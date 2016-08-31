@@ -7,7 +7,7 @@ cd /home/odroid/
 sleep 5
 screen -S bridge -d -m roslaunch rosbridge_server rosbridge_websocket.launch
 rosparam load /home/odroid/rosws/src/windowblind/tools/parameters_blind.yaml
-screen -S aromBrain -d -m rosrun arom aromBrain.py /home/odroid/rosws/src/arom/cfg/test.json
+screen -S aromBrain -d -m rosrun arom aromBrain.py /home/odroid/rosws/src/AROM/cfg/test.json
 screen -S pymlab -d -m rosrun arom ROSpymlabServer.py
 
 sleep 10

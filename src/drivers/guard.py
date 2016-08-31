@@ -179,7 +179,7 @@ class window(object):
     def run(self):
         print "#############################"
         if not self.isWindOk():
-            self.allup()
+            self.allup(True)
         else:
             for i, blind_id in enumerate(sorted(rospy.get_param('/blind'))):
                 print "======", blind_id, "==========",
@@ -307,7 +307,7 @@ class window(object):
         mtime = time.time()
         damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-3600*24) )[0][0])
         actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime- 300) )[0][0])
-        if actual < wind_limit and damage > 1:
+        if actual < wind_limit and damage > 0:
             return True
         else:
             return False

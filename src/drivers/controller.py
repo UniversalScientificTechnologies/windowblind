@@ -129,7 +129,7 @@ class controller(object):
         damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-3600*24) )[0][0])
         actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
         print "actual wind", actual, "damage", damage
-        if actual < wind_limit and damage > 1:
+        if actual < wind_limit and damage > 0:
             rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f&#176." %(float(self.sunLoc.alt.degree)))
             return True
         else:
