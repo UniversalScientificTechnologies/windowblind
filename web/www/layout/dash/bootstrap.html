@@ -115,24 +115,24 @@
 
                                         {% if blind['mode'] == 'manual'%}
                                         <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')" {% if blind['mode'] == 'auto'%}distabled{%end%}> Vytáhnout </button>
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'close')" {% if blind['mode'] == 'auto'%}distabled{%end%}> Dolů </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')"> Nahoru </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'close')"> Dolu </button>
                                             <!-- <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button>--></div>
                                         {% else %}
                                         <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-secondary" disabled {% if blind['mode'] == 'auto'%}distabled{%end%}> Vytáhnout </button>
-                                            <button type="button" class="btn btn-secondary" disabled {% if blind['mode'] == 'auto'%}distabled{%end%}> Dolů </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'openTemp')"> Nahoru <small>(tmp)</small></button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'closeTemp')"> Dolu <small>(tmp)</small></button>
                                             <!-- <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button>--></div>
                                         {% end %}
-                                        <div class="progress progress-bar-vertical progress-bar-success progress-bar-striped" style="width: 100%">
+                                        <div class="progress progress-bar-vertical progress-bar-primary progress-bar-striped" style="width: 100%; background-color: blue;">
                                             {% if blind['status_driver'] == 'open'%}
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 95px;">
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 95px; background-color: lightgray;">
                                                 </div>
                                             {% elif blind['status_driver'] == 'close' %}
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 7px;">
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 7px; background-color: lightgray;">
                                                 </div>
                                             {% else %}
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 50px;">
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="height: 100%; margin-bottom: 50px; background-color: lightgray;">
                                                 </div>
                                             {% end %}
                                         </div>

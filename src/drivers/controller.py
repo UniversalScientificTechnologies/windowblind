@@ -77,7 +77,7 @@ class controller(object):
                     print "chyba vetru"
 
                 else:
-                    if self.isModeAuto(group_id):
+                    if self.isModeAuto(group_id) and not self.isTempMode(group_id):
                         print "vitr OK - automaticky mod - ",
                         rospy.loginfo("blind '%s' is in auto" %group_id)
                         if self.isMorgen(group_id):
@@ -87,6 +87,8 @@ class controller(object):
                             print "je odpoledne - ",
                             self.areAfternoonCondOk(group_id)
                             #self.closeBlind(group_id)
+                    elif self.isTempMode(group_id):
+                        print "vitr OK - automaticky mod v manual TEM rezimu "
 
                     elif self.isModeManual(group_id):
                         print "vitr OK - manualni mod - "
@@ -130,7 +132,7 @@ class controller(object):
         actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
         print "actual wind", actual, "damage", damage
         if actual < wind_limit and damage > 0:
-            rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f&#176." %(float(self.sunLoc.alt.degree)))
+            rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f." %(float(self.sunLoc.alt.degree)))
             return True
         else:
             rospy.set_param('/blind/global/message', "wind alarm!!!")
@@ -138,6 +140,9 @@ class controller(object):
 
     def getMode(self, group):
         return rospy.get_param('/blind/'+group+'/mode', None)
+
+    def isTempMode(self, group):
+        return rospy.get_param('/blind/'+group+'/modeTemp', False)
 
     def isModeAuto(self, group):
         if self.getMode(group) == 'auto':

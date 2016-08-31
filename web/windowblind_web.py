@@ -227,6 +227,7 @@ class BlindApi(web.RequestHandler):
                 // blind_open_time
                 '''
                 mode = self.get_argument('mode')
+
                 #close_min_lum = self.get_argument('close_min_lum')
                 #close_min_temp = self.get_argument('close_min_temp')
                 blind_down_time = self.get_argument('blind_down_time')
@@ -237,6 +238,7 @@ class BlindApi(web.RequestHandler):
                 blind_open_time = self.get_argument('blind_open_time')
 
                 rospy.set_param('/blind/'+id+"/mode", mode)
+                rospy.set_param('/blind/'+id+"/modeTemp", False)
                 #rospy.set_param('/blind/'+id+"/close_min_lum", close_min_lum)
                 #rospy.set_param('/blind/'+id+"/close_min_temp", close_min_temp)
                 rospy.set_param('/blind/'+id+"/blind_down_time", blind_down_time)
@@ -245,6 +247,7 @@ class BlindApi(web.RequestHandler):
                 rospy.set_param('/blind/'+id+"/blind_afternoon_time", blind_afternoon_time)
                 rospy.set_param('/blind/'+id+"/max_sun_alt_open", max_sun_alt_open)
                 rospy.set_param('/blind/'+id+"/blind_open_time", blind_open_time)
+
 
             try:
                 os.system("rosparam dump /home/odroid/rosws/parameters.yaml")
@@ -259,6 +262,17 @@ class BlindApi(web.RequestHandler):
             print "################################"
             if blind_action == 'open' or blind_action == 'close':
                 rospy.set_param('/blind/'+blind_id+"/status", blind_action)
+                rospy.set_param('/blind/'+blind_id+"/modeTemp", False)
+
+            elif blind_action == 'openTemp':
+                rospy.set_param('/blind/'+blind_id+"/status", 'open')
+                rospy.set_param('/blind/'+blind_id+"/modeTemp", True)
+
+            elif blind_action == 'closeTemp':
+                rospy.set_param('/blind/'+blind_id+"/status", 'close')
+                rospy.set_param('/blind/'+blind_id+"/modeTemp", True)
+            
+
             elif 'rotate_' in blind_action:
                 value = rospy.get_param('/blind/'+blind_id+"/rotate")
                 if blind_action == 'rotate_up':

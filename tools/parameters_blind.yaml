@@ -1,4 +1,4 @@
-ObservatoryConfig: {file: /home/odroid/ros_ws/src/arom/cfg/test.json}
+ObservatoryConfig: {file: /home/odroid/rosws/src/AROM/cfg/test.json}
 blind:
   global: {max_wind: '50', max_wind_delay: '10', message: "syst\xE9m funguje, v\xFD\
       \u0161ka Slunce je 23.73.", min_light: '3000', min_light_delay: '50', min_temp: '22'}
