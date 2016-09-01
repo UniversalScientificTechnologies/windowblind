@@ -70,6 +70,11 @@ class controller(object):
                 if group['rw'] == 'd':
                     break
 
+                if datetime.datetime.now().hour == 0:
+                	if isTempMode(group_id):
+                		rospy.set_param('/blind/'+group_id+"/modeTemp", False)
+                		rospy.set_param('/blind/'+group_id+"/status", 'open')
+
                 rospy.loginfo(">> %s" % repr(group_id))
                 if not self.isWindOk():
                     self.openBlind(group_id)
@@ -93,17 +98,6 @@ class controller(object):
                     elif self.isModeManual(group_id):
                         print "vitr OK - manualni mod - "
                         '''
-                        print "pohyb", group['status'] != group['status_driver'], group['status'], group['status_driver']
-                        #if group['status'] == 'open':
-                        #    print "STATUS **********************",
-                        #else:
-                        #    print "STATUS ######################",
-                        #if group['status_driver'] == 'open':
-                        #    print "  DRIVER  **********************"
-                        #else:
-                        #    print " DRIVER ######################"
-                        #if group['status'] != group['status_driver']:
-                        #    self.moveBlind(group_id, group['status'])
                         '''
 
 
