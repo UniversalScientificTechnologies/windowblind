@@ -62,7 +62,10 @@ class controller(object):
         self.groups = groups
         self.group  = groups
         self.inTemp = float(self._sql('SELECT value FROM weather WHERE sensors_id = 5 order by id desc LIMIT 1;')[0][0])
-        self.outLum = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 3 and date > %i;' %(int(time.time() - int(rospy.get_param('/blind/global/min_light_delay', 30)*60))) )[0][0])
+        self.outLum = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 3 and date > %i;' %(int(time.time()) - int(rospy.get_param('/blind/global/min_light_delay', '30'))*60))[0][0])
+        #int(time.time() -  (int(rospy.get_param('/blind/global/min_light_delay'))*60)) 
+        #print self.outLum, 'SELECT AVG(value) FROM weather WHERE sensors_id = 3 and date > %i;' %
+        #(int(time.time() - int(rospy.get_param('/blind/global/min_light_delay', 30)*60))) 
         for i, group_id in enumerate(sorted(groups)):
             print "=====", i, "====", group_id, "===="
             if 'group' in group_id:
@@ -71,7 +74,7 @@ class controller(object):
                     break
 
                 if datetime.datetime.now().hour == 0:
-                	if isTempMode(group_id):
+                	if self.isTempMode(group_id):
                 		rospy.set_param('/blind/'+group_id+"/modeTemp", False)
                 		rospy.set_param('/blind/'+group_id+"/status", 'open')
 
@@ -120,7 +123,7 @@ class controller(object):
 
     def isWindOk(self):
         wind_limit = int(rospy.get_param('/blind/global/max_wind', 50))
-        wind_limit_delay = int(rospy.get_param('/blind/global/max_wind_delay', 60*48)*60)
+        wind_limit_delay = int(int(rospy.get_param('/blind/global/max_wind_delay', '10'))*60)
         mtime = time.time()
         damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-3600*24) )[0][0])
         actual = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-wind_limit_delay) )[0][0])
@@ -129,7 +132,7 @@ class controller(object):
             rospy.set_param('/blind/global/message', "systém funguje, výška Slunce je %f." %(float(self.sunLoc.alt.degree)))
             return True
         else:
-            rospy.set_param('/blind/global/message', "wind alarm!!!")
+            rospy.set_param('/blind/global/message', "wind alarm!!! - %f %f s" %(mtime, wind_limit_delay))
             return False
 
     def getMode(self, group):
@@ -154,7 +157,8 @@ class controller(object):
     def isMorgen(self, group):
         now = datetime.datetime.now()
         sunHeight = float(self.sunLoc.alt.degree)
-        if now.hour < 12 or sunHeight > float(self.groups[group]['max_sun_alt_shade']):
+        print now.hour,"<", 13, "or", sunHeight,">", float(self.groups[group]['max_sun_alt_shade'])
+        if now.hour < 15 or sunHeight > float(self.groups[group]['max_sun_alt_shade']):
             return True
         else:
             return False
@@ -164,17 +168,21 @@ class controller(object):
         # >> min cas
         # >> min jas po urcitou dobu
 
+        min_light = float(self.group['global']['min_light'])
+        min_in_temp = float(self.group['global']['min_temp'])
+        now = datetime.datetime.now()
+        day_minute = now.hour*60+now.minute
+
         #inTemp = float(self._sql('SELECT value FROM weather WHERE sensors_id = 17 order by id desc LIMIT 1;')[0][0])
         #outLum = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 16 and date > %i;' %(int(time.time() - int(rospy.get_param('/blind/global/min_light_delay', 30)*60))) )[0][0])
-        print "rano - lum: %s, in temp %s" %(repr(self.outLum), repr(self.inTemp))
+        print "lum:%s/%s, INtemp:%s/%s, cas:%s/%s" %(repr(self.outLum), repr(min_light), repr(self.inTemp), repr(min_in_temp), repr(day_minute), repr(12*60))
 
 
         #if inTemp self.group[group]['close_min_temp'] > and outLum > self.group[group]['close_min_lum']:
-        now = datetime.datetime.now()
-        if (now.hour*60+now.minute) > 7*60  and self.outLum > float(self.group['global']['min_light']) and self.inTemp > float(self.group['global']['min_temp']):
-            rospy.loginfo("ZAVRIT")
+        #now = datetime.datetime.now()
+        if day_minute > 12*60 and self.outLum > min_light and self.inTemp > min_in_temp:
+            rospy.loginfo("ZAVRIT automaticky")
             self.closeBlind(group)
-            rospy.loginfo("ZAVRIT")
             return True
         else:
             return False
@@ -191,8 +199,8 @@ class controller(object):
             print "-- Otevrit kompletne"
             self.openBlind(group)
             rospy.loginfo("OTEVRIT")
-        elif sunHeight < float(self.groups[group]['max_sun_alt_shade']) and self.outLum > float(self.group['global']['min_light']):  #vyska slunce pro pootoceni
-            print "-- privrit"
+        elif sunHeight < float(self.groups[group]['max_sun_alt_shade']):  #vyska slunce pro pootoceni
+        #elif sunHeight < float(self.groups[group]['max_sun_alt_shade']) and self.outLum > float(self.group['global']['min_light']):  #vyska slunce pro pootoceni
             rospy.loginfo("OTOCIT")
             self.rotateBlind(group)
         else:

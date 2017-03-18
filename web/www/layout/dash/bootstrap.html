@@ -110,18 +110,19 @@
                                 {% if blind['rw'] != 'd'%}
 
                                 <div class=" col-sm-3 col-xs-12"> <div class="panel panel-default">
-                                    <div class="panel-heading">{{blind['name']}} <small>{{blind['rotation_driver']}}</small> <b>[{{blind['mode']}}]</b></div>
+                                    <div class="panel-heading">{{blind['name']}} <small>{{blind['rotation_driver']}}</small> <b>[{{blind['mode']}}]</b><br><small>{{blind['status_driver']}} > {{blind['status']}}</small></div>
                                     <div class="panel-body">
 
                                         {% if blind['mode'] == 'manual'%}
                                         <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')"> Nahoru </button>
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'close')"> Dolu </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'open')"> <span class="glyphicon glyphicon-menu-up"></span>  </button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'close')"> <span class="glyphicon glyphicon-menu-down"></span> </button>
                                             <!-- <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button>--></div>
                                         {% else %}
                                         <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'openTemp')"> Nahoru <small>(tmp)</small></button>
-                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'closeTemp')"> Dolu <small>(tmp)</small></button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'openTemp')"> <span class="glyphicon glyphicon-menu-up"></span> <small>(tmp)</small></button>
+                                            <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'closeTemp')"> <span class="glyphicon glyphicon-menu-down"></span> <small>(tmp)</small></button>
+                                            {% if blind['modeTemp']%}<button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'auto')"> Auto <small></small></button>{% end %}
                                             <!-- <button type="button" class="btn btn-secondary" onclick="blindAction('{{blind_id}}', 'rotate_up')" disabled> Pootočit </button>--></div>
                                         {% end %}
                                         <div class="progress progress-bar-vertical progress-bar-primary progress-bar-striped" style="width: 100%; background-color: blue;">

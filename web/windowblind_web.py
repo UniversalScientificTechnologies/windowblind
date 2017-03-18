@@ -250,7 +250,7 @@ class BlindApi(web.RequestHandler):
 
 
             try:
-                os.system("rosparam dump /home/odroid/rosws/parameters.yaml")
+                os.system("rosparam dump /home/odroid/rosws/src/windowblind/tools/parameters_blind.yaml")
             except Exception, e:
                 raise e
 
@@ -260,7 +260,11 @@ class BlindApi(web.RequestHandler):
             print "*********************************"
             print blind_action, blind_id
             print "################################"
-            if blind_action == 'open' or blind_action == 'close':
+            if blind_action == 'auto':
+                rospy.set_param('/blind/'+blind_id+"/status", 'open')
+                rospy.set_param('/blind/'+blind_id+"/modeTemp", False)
+
+            elif blind_action == 'open' or blind_action == 'close':
                 rospy.set_param('/blind/'+blind_id+"/status", blind_action)
                 rospy.set_param('/blind/'+blind_id+"/modeTemp", False)
 
@@ -270,8 +274,7 @@ class BlindApi(web.RequestHandler):
 
             elif blind_action == 'closeTemp':
                 rospy.set_param('/blind/'+blind_id+"/status", 'close')
-                rospy.set_param('/blind/'+blind_id+"/modeTemp", True)
-            
+                rospy.set_param('/blind/'+blind_id+"/modeTemp", True)            
 
             elif 'rotate_' in blind_action:
                 value = rospy.get_param('/blind/'+blind_id+"/rotate")

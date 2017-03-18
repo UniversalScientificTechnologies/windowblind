@@ -252,6 +252,8 @@ class window(object):
 
         #sepne spravny okruh smerem nahoru
         state = 0b0 ^ (0b1 << group_num*2)
+        self.pymlab(device="blind", method="config_ports", parameters=str((0x00, 0x00)))
+        #self.pymlab(device="blind", method="set_ports", parameters=str((~state, 0x00000000)))
         self.pymlab(device="blind", method="set_ports", parameters=str((~state, 0x00000000)))
         #ceka se pozadovany cas
         time.sleep(delay)
@@ -271,6 +273,9 @@ class window(object):
 
 
     def down(self, group_num, group, delay_ms = 250, back_delay_ms = 0, force = False):
+	if not self.isWindOk():
+            return False
+
         #vytvoreni promennych, kde jsou sekundy (ziskane jednotky jsou ms)
         delay = delay_ms/1000.0
         back_delay = back_delay_ms/1000.0
@@ -279,6 +284,7 @@ class window(object):
 
         #sepne spravny okruh smerem dolu
         state = 0b0 ^ (0b1 << group_num*2+1)
+        self.pymlab(device="blind", method="config_ports", parameters=str((0x00, 0x00)))
         self.pymlab(device="blind", method="set_ports", parameters=str((~state, 0x00000000)))
         #ceka se pozadovany cas
         time.sleep(delay)
@@ -303,11 +309,11 @@ class window(object):
 
     def isWindOk(self):
         wind_limit = rospy.get_param('/blind/global/max_wind', 50)
-        wind_limit_delay = rospy.get_param('/blind/global/max_wind_delay', 60*48)*60
+        wind_limit_delay = int(rospy.get_param('/blind/global/max_wind_delay', 10)*60)
         mtime = time.time()
-        damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-3600*24) )[0][0])
-        actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime- 300) )[0][0])
-        if actual < wind_limit and damage > 0:
+        #damage = float(self._sql('SELECT MAX(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime-3600*24) )[0][0])
+        actual = float(self._sql('SELECT AVG(value) FROM weather WHERE sensors_id = 4 and date > %f;' %int(mtime- wind_limit_delay) )[0][0])
+        if actual < wind_limit:
             return True
         else:
             return False

@@ -259,7 +259,14 @@ class AWS01B(weatherStation):
         Light = eval(self.pymlab(device="AWS_light", method="get_lux", parameters=None).value)/10
 
     # WIND
-        speed = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
+        speed1 = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
+        speed2 = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
+        speed3 = abs(eval(self.pymlab(device="AWS_wind_s", method="get_speed", parameters='').value))
+	speed = (speed1 + speed2 + speed3)/3
+        speed = speed * 0.975 # kmph
+
+	# plot '1472745590-log.txt' u 1:($2 * 0.3 * 3.25) w l,  '1472745590-log.txt' u 1:($3 * 3.6) w l lw 5
+
         
         rospy.loginfo('OUT: %s-C%%, %s-lux, %s-mps, IN: %s-C-%%' %(str(TempHumOut), str(Light), str(speed), str(TempHumIn)))
 
