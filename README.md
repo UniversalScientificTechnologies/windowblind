@@ -9,3 +9,5 @@ A control system for reducing indoor temperature according to the Sunshine and o
 
 
 
+[MLAB Wiki documentation](http://wiki.mlab.cz/doku.php?id=cs:designs:windowsblind)
+
